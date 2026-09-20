@@ -59,6 +59,14 @@ try{ var _tm = localStorage.getItem('meal_app_theme_mode');
   .navbtn:hover{background:var(--surface-2);color:var(--ink);}
   .navbtn.active{background:var(--accent-soft);color:var(--accent-strong);font-weight:600;}
   .nav-sep{height:1px;background:var(--border-soft);margin:10px 4px;}
+  /* 메뉴 묶음 — 식단(대시보드·영업부·용역부) / 관리 / 설정을 눈으로 구분한다 */
+  .navgroup{display:flex;flex-direction:column;gap:2px;}
+  .nav-group-label{padding:2px 10px 6px;font-size:10px;font-weight:700;letter-spacing:.05em;color:var(--ink-faint);}
+  .navbtn.nav-primary{padding:11px 10px;margin-bottom:2px;align-items:flex-start;}
+  .navbtn.nav-primary svg{width:19px;height:19px;margin-top:1px;}
+  .navbtn.nav-primary .nav-label{display:flex;flex-direction:column;gap:2px;line-height:1.3;}
+  .navbtn.nav-primary .nav-sub{font-size:10.5px;font-weight:500;color:var(--ink-faint);}
+  .navbtn.nav-primary.active .nav-sub{color:var(--accent-strong);opacity:.75;}
   .sidebar-foot{margin-top:auto;padding:10px 8px 4px;font-size:11px;color:var(--ink-faint);border-top:1px solid var(--border-soft);}
   /* 화면 밝기(테마) 선택 — 자동은 기기 설정을 따라가고, 밝게/어둡게는 이 브라우저에 기억된다 */
   .sidebar-bottom{margin-top:auto;}
@@ -247,6 +255,8 @@ try{ var _tm = localStorage.getItem('meal_app_theme_mode');
   .auth-msg.err{background:rgba(190,60,50,.10);color:var(--red,#b4362c);}
   .auth-msg.ok{background:rgba(40,140,80,.10);color:var(--green,#1f6f3f);}
   .auth-note{margin-top:14px;font-size:11.5px;color:var(--muted);line-height:1.6;}
+  .auth-hint{margin:-6px 0 12px;font-size:11px;color:var(--muted);padding-left:2px;}
+  .auth-hint[hidden]{display:none;}
   .auth-wait{text-align:center;}
   .auth-wait .big{font-size:34px;margin-bottom:10px;}
   .auth-wait h2{font-size:16px;margin:0 0 8px;}
@@ -284,9 +294,10 @@ try{ var _tm = localStorage.getItem('meal_app_theme_mode');
       <label class="auth-field" id="authDeptField" hidden>소속 부서
         <input type="text" id="authDept" autocomplete="organization" placeholder="영업부 / 용역부 등">
       </label>
-      <label class="auth-field">이메일
-        <input type="email" id="authEmail" autocomplete="email" placeholder="name@ucgroup.kr">
+      <label class="auth-field">아이디
+        <input type="text" id="authEmail" autocomplete="username" placeholder="hong2026">
       </label>
+      <div class="auth-hint" id="authIdHint" hidden>영문 소문자·숫자 3~20자 (. _ - 사용 가능)</div>
       <label class="auth-field">비밀번호
         <input type="password" id="authPw" autocomplete="current-password" placeholder="6자 이상">
       </label>
@@ -311,43 +322,51 @@ try{ var _tm = localStorage.getItem('meal_app_theme_mode');
       <div class="brand-mark">식</div>
       <div class="brand-text"><b>구내식단 운영판</b><span>Unbelievable Company</span></div>
     </div>
-    <button class="navbtn" data-tab="dashboard" onclick="setTab('dashboard')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg>
-      대시보드
-    </button>
-    <button class="navbtn" data-tab="plan" onclick="setTab('plan')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2"/><line x1="3" y1="9.5" x2="21" y2="9.5"/><line x1="8" y1="2.5" x2="8" y2="6.5"/><line x1="16" y1="2.5" x2="16" y2="6.5"/></svg>
-      식단표
-    </button>
-    <button class="navbtn" data-tab="menus" onclick="setTab('menus')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="5" x2="19" y2="5"/><line x1="5" y1="10.3" x2="19" y2="10.3"/><line x1="5" y1="15.6" x2="19" y2="15.6"/><line x1="5" y1="19" x2="13" y2="19"/></svg>
-      메뉴 관리
-    </button>
-    <button class="navbtn" data-tab="ingredients" onclick="setTab('ingredients')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c-2.5 3-4 5.7-4 8a4 4 0 0 0 8 0c0-2.3-1.5-5-4-8z"/><path d="M4 21c1.5-4 4-6 8-6s6.5 2 8 6"/></svg>
-      재료·상품 관리
-    </button>
-    <button class="navbtn" data-tab="service" onclick="setTab('service')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M3 12h18"/><path d="M9 7V4.5h6V7"/></svg>
-      용역부 식단
-    </button>
-    <button class="navbtn" data-tab="order" onclick="setTab('order')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2.2l2.2 11.3a2 2 0 0 0 2 1.6h7.4a2 2 0 0 0 2-1.6L20.6 8H6.1"/><circle cx="9.5" cy="20" r="1.3"/><circle cx="17.5" cy="20" r="1.3"/></svg>
-      재료구매
-    </button>
-    <button class="navbtn" data-tab="cost" onclick="setTab('cost')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="12" width="4" height="8"/><rect x="10" y="7" width="4" height="13"/><rect x="16" y="3" width="4" height="17"/></svg>
-      원가분석
-    </button>
+    <div class="navgroup" data-group="meal">
+      <button class="navbtn nav-primary" data-tab="dashboard" onclick="setTab('dashboard')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg>
+        <span class="nav-label"><span>대시보드</span><span class="nav-sub">이번 주 전체 현황</span></span>
+      </button>
+      <button class="navbtn nav-primary" data-tab="plan" onclick="setTab('plan')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2"/><line x1="3" y1="9.5" x2="21" y2="9.5"/><line x1="8" y1="2.5" x2="8" y2="6.5"/><line x1="16" y1="2.5" x2="16" y2="6.5"/></svg>
+        <span class="nav-label"><span>영업부 식단표</span><span class="nav-sub">사내 조리 · 점심 + 간식</span></span>
+      </button>
+      <button class="navbtn nav-primary" data-tab="service" onclick="setTab('service')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M3 12h18"/><path d="M9 7V4.5h6V7"/></svg>
+        <span class="nav-label"><span>용역부 식단표</span><span class="nav-sub">전날 영업부 식단 → 도시락</span></span>
+      </button>
+    </div>
     <div class="nav-sep"></div>
-    <button class="navbtn" data-tab="settings" onclick="setTab('settings')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="14" cy="6" r="2"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="9" cy="12" r="2"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="16" cy="18" r="2"/></svg>
-      설정 · 거래처
-    </button>
-    <button class="navbtn" data-tab="users" onclick="setTab('users')" hidden>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c.6-3.6 3.3-5.5 6.5-5.5s5.9 1.9 6.5 5.5"/><path d="M17 11.5l1.6 1.6L22 9.7"/></svg>
-      회원 관리
-    </button>
+    <div class="navgroup" data-group="manage">
+      <div class="nav-group-label">관리</div>
+      <button class="navbtn" data-tab="menus" onclick="setTab('menus')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="5" x2="19" y2="5"/><line x1="5" y1="10.3" x2="19" y2="10.3"/><line x1="5" y1="15.6" x2="19" y2="15.6"/><line x1="5" y1="19" x2="13" y2="19"/></svg>
+        메뉴 관리
+      </button>
+      <button class="navbtn" data-tab="order" onclick="setTab('order')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2.2l2.2 11.3a2 2 0 0 0 2 1.6h7.4a2 2 0 0 0 2-1.6L20.6 8H6.1"/><circle cx="9.5" cy="20" r="1.3"/><circle cx="17.5" cy="20" r="1.3"/></svg>
+        재료구매
+      </button>
+      <button class="navbtn" data-tab="ingredients" onclick="setTab('ingredients')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c-2.5 3-4 5.7-4 8a4 4 0 0 0 8 0c0-2.3-1.5-5-4-8z"/><path d="M4 21c1.5-4 4-6 8-6s6.5 2 8 6"/></svg>
+        재료·상품 관리
+      </button>
+      <button class="navbtn" data-tab="cost" onclick="setTab('cost')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="12" width="4" height="8"/><rect x="10" y="7" width="4" height="13"/><rect x="16" y="3" width="4" height="17"/></svg>
+        원가분석
+      </button>
+    </div>
+    <div class="nav-sep"></div>
+    <div class="navgroup" data-group="admin">
+      <button class="navbtn" data-tab="settings" onclick="setTab('settings')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="14" cy="6" r="2"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="9" cy="12" r="2"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="16" cy="18" r="2"/></svg>
+        설정 · 거래처
+      </button>
+      <button class="navbtn" data-tab="users" onclick="setTab('users')" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c.6-3.6 3.3-5.5 6.5-5.5s5.9 1.9 6.5 5.5"/><path d="M17 11.5l1.6 1.6L22 9.7"/></svg>
+        회원 관리
+      </button>
+    </div>
     <div class="sidebar-bottom">
       <div class="me-box no-print" id="meBox" hidden>
         <div class="me-name" id="meName"></div>
@@ -776,6 +795,25 @@ const FIREBASE_CONFIG = {
 const BOOTSTRAP_ADMIN_EMAILS = ['uc3@ucgroup.kr'];
 const FIREBASE_SDK_VERSION = '8.10.1';
 
+/* ---------- 아이디 로그인 ----------
+ * 직원은 이메일이 아니라 "아이디"로 가입·로그인한다. Firebase 인증은 이메일 형식만 받으므로,
+ * 아이디 뒤에 고정 도메인을 붙여 내부용 주소(hong2026@meal.ucgroup.kr)로 바꿔서 넘긴다.
+ * 실제 메일을 보내는 주소가 아니며, 직원에게는 어디에도 보이지 않는다.
+ * 예전에 이메일로 만든 계정도 그대로 쓸 수 있도록, 입력값에 '@'가 있으면 그대로 사용한다. */
+const LOGIN_EMAIL_DOMAIN = 'meal.ucgroup.kr';
+const USERNAME_RE = /^[a-z0-9][a-z0-9._-]{2,19}$/;
+/** 화면에 입력한 값(아이디 또는 이메일) → Firebase에 넘길 주소 */
+function toLoginEmail(input){
+  const v = String(input || '').trim().toLowerCase();
+  if(!v) return '';
+  return v.includes('@') ? v : (v + '@' + LOGIN_EMAIL_DOMAIN);
+}
+/** 내부 주소 → 화면에 보여줄 아이디(내부 도메인이면 앞부분만, 실제 이메일이면 그대로) */
+function toDisplayId(email){
+  const v = String(email || '');
+  return v.endsWith('@' + LOGIN_EMAIL_DOMAIN) ? v.slice(0, -(LOGIN_EMAIL_DOMAIN.length + 1)) : v;
+}
+
 let AUTH_ENABLED = false;   // Firebase가 연결돼 있으면 true
 let fbAuth = null;
 let ME = null;              // {uid, email, name, dept, role, status}
@@ -869,7 +907,8 @@ function normalizeUser(raw, uid){
   const u = {...(raw||{})};
   u.uid    = uid || u.uid || '';
   u.email  = u.email || '';
-  u.name   = u.name || u.email.split('@')[0] || '(이름 없음)';
+  u.username = u.username || toDisplayId(u.email);
+  u.name   = u.name || u.username || '(이름 없음)';
   u.dept   = u.dept || '';
   u.role   = (u.role === 'admin' || u.role === 'editor') ? u.role : 'general';
   u.status = (u.status === 'approved' || u.status === 'rejected') ? u.status : 'pending';
@@ -892,7 +931,8 @@ async function createMyUserDoc(user, name, dept){
   const rec = {
     uid: user.uid,
     email: user.email || '',
-    name: name || (user.email||'').split('@')[0] || '',
+    username: toDisplayId(user.email || ''),
+    name: name || toDisplayId(user.email || '') || '',
     dept: dept || '',
     role: boot ? 'admin' : 'general',
     status: boot ? 'approved' : 'pending',
@@ -917,10 +957,11 @@ function setAuthMode(mode){
   authMode = mode;
   authEl('authTabLogin').classList.toggle('active', mode==='login');
   authEl('authTabSignup').classList.toggle('active', mode==='signup');
-  ['authNameField','authDeptField'].forEach(id=>{
+  ['authNameField','authDeptField','authIdHint'].forEach(id=>{
     if(mode==='signup') authEl(id).removeAttribute('hidden'); else authEl(id).setAttribute('hidden','');
   });
   authEl('authSubmit').textContent = mode==='signup' ? '가입 신청' : '로그인';
+  authEl('authEmail').setAttribute('placeholder', mode==='signup' ? '쓰실 아이디를 정해주세요' : '아이디');
   authEl('authPw').setAttribute('autocomplete', mode==='signup' ? 'new-password' : 'current-password');
   authEl('authNote').textContent = mode==='signup'
     ? '가입 신청 후 관리자가 승인해야 이용할 수 있습니다. 승인되면 권한(일반 / 권한지정)도 함께 지정됩니다.'
@@ -941,13 +982,13 @@ function hideAuthGate(){
 function authErrorMessage(e){
   const code = (e && e.code) || '';
   const map = {
-    'auth/invalid-email'        : '이메일 형식이 올바르지 않습니다.',
+    'auth/invalid-email'        : '아이디에 쓸 수 없는 문자가 들어 있습니다.',
     'auth/missing-password'     : '비밀번호를 입력해 주세요.',
     'auth/weak-password'        : '비밀번호는 6자 이상이어야 합니다.',
-    'auth/email-already-in-use' : '이미 가입된 이메일입니다. 로그인해 주세요.',
-    'auth/user-not-found'       : '가입되지 않은 이메일입니다.',
+    'auth/email-already-in-use' : '이미 사용 중인 아이디입니다. 다른 아이디를 써주세요.',
+    'auth/user-not-found'       : '가입되지 않은 아이디입니다.',
     'auth/wrong-password'       : '비밀번호가 맞지 않습니다.',
-    'auth/invalid-credential'   : '이메일 또는 비밀번호가 맞지 않습니다.',
+    'auth/invalid-credential'   : '아이디 또는 비밀번호가 맞지 않습니다.',
     'auth/too-many-requests'    : '시도가 너무 잦습니다. 잠시 후 다시 해주세요.',
     'auth/network-request-failed':'네트워크 연결을 확인해 주세요.',
     'auth/operation-not-allowed': '이메일 로그인이 아직 켜져 있지 않습니다. 관리자에게 알려주세요.',
@@ -956,12 +997,20 @@ function authErrorMessage(e){
 }
 async function submitAuth(){
   if(authBusy) return;
-  const email = authEl('authEmail').value.trim();
+  const idInput = authEl('authEmail').value.trim();
   const pw    = authEl('authPw').value;
   const name  = authEl('authName').value.trim();
   const dept  = authEl('authDept').value.trim();
-  if(!email || !pw){ showAuthMsg('이메일과 비밀번호를 입력해 주세요.'); return; }
-  if(authMode === 'signup' && !name){ showAuthMsg('이름을 입력해 주세요.'); return; }
+  if(!idInput || !pw){ showAuthMsg('아이디와 비밀번호를 입력해 주세요.'); return; }
+  if(authMode === 'signup'){
+    if(!name){ showAuthMsg('이름을 입력해 주세요.'); return; }
+    if(!idInput.includes('@') && !USERNAME_RE.test(idInput.toLowerCase())){
+      showAuthMsg('아이디는 영문 소문자·숫자 3~20자로 만들어 주세요. (. _ - 사용 가능)');
+      return;
+    }
+    if(pw.length < 6){ showAuthMsg('비밀번호는 6자 이상이어야 합니다.'); return; }
+  }
+  const email = toLoginEmail(idInput);
   authBusy = true;
   authEl('authSubmit').disabled = true;
   authEl('authSubmit').textContent = '처리 중…';
@@ -1001,16 +1050,25 @@ function renderMeBox(){
   const box = document.getElementById('meBox');
   box.removeAttribute('hidden');
   document.getElementById('meName').textContent = ME.name;
-  document.getElementById('meMail').textContent = ME.email;
+  document.getElementById('meMail').textContent = ME.username || toDisplayId(ME.email);
   const r = document.getElementById('meRole');
   r.className = 'me-role ' + ME.role;
   r.textContent = ROLE_LABEL[ME.role];
 }
-/** 권한에 따라 사이드바 탭을 보이고 숨긴다. */
+/** 권한에 따라 사이드바 탭을 보이고 숨긴다.
+ *  한 묶음이 통째로 비면 그 묶음과 바로 위 구분선까지 같이 숨겨, 빈 줄이 남지 않게 한다. */
 function applyNavPermissions(){
   document.querySelectorAll('.navbtn').forEach(b=>{
     if(canViewTab(b.dataset.tab)) b.removeAttribute('hidden');
     else b.setAttribute('hidden','');
+  });
+  document.querySelectorAll('.navgroup').forEach(g=>{
+    const visible = !!g.querySelector('.navbtn:not([hidden])');
+    if(visible) g.removeAttribute('hidden'); else g.setAttribute('hidden','');
+    const sep = g.previousElementSibling;
+    if(sep && sep.classList.contains('nav-sep')){
+      if(visible) sep.removeAttribute('hidden'); else sep.setAttribute('hidden','');
+    }
   });
 }
 
@@ -1086,7 +1144,7 @@ async function removeUser(uid){
   if(!isAdmin()) return;
   const u = usersCache.find(x=>x.uid===uid);
   if(uid === (ME && ME.uid)){ await customAlert('본인 계정은 삭제할 수 없습니다.'); return; }
-  if(!await customConfirm('"'+(u?u.name:'')+'" 회원 기록을 삭제할까요?\n\n이 목록에서만 사라지며, 같은 이메일로 다시 가입하면 새로 승인해야 합니다.')) return;
+  if(!await customConfirm('"'+(u?u.name:'')+'" 회원 기록을 삭제할까요?\n\n이 목록에서만 사라지며, 같은 아이디로 다시 가입하면 새로 승인해야 합니다.')) return;
   await db.doc('users/'+uid).delete();
   await loadUsers();
   render();
@@ -1193,7 +1251,7 @@ function renderUsers(){
   const pendingRows = pending.map(u=>`
     <tr>
       <td><b>${esc(u.name)}</b>${u.dept?`<div class="muted" style="font-size:11px;">${esc(u.dept)}</div>`:''}</td>
-      <td class="wrap">${esc(u.email)}</td>
+      <td class="wrap">${esc(u.username || toDisplayId(u.email))}</td>
       <td>${roleSelect(u)}</td>
       <td style="white-space:nowrap;">
         <button class="btn primary" onclick="setUserStatus('${escJsAttr(u.uid)}','approved')">승인</button>
@@ -1203,7 +1261,7 @@ function renderUsers(){
   const otherRows = others.map(u=>`
     <tr>
       <td><b>${esc(u.name)}</b>${u.dept?`<div class="muted" style="font-size:11px;">${esc(u.dept)}</div>`:''}</td>
-      <td class="wrap">${esc(u.email)}</td>
+      <td class="wrap">${esc(u.username || toDisplayId(u.email))}</td>
       <td><span class="chip ${u.status==='approved'?'green':'gray'}">${STATUS_LABEL[u.status]}</span></td>
       <td>${roleSelect(u)}</td>
       <td class="wrap muted" style="font-size:11px;">${esc(ROLE_DESC[u.role])}</td>
@@ -1218,7 +1276,7 @@ function renderUsers(){
   <div class="card">
     <div class="section-title">가입 신청 ${pending.length ? `<span class="chip amber">${pending.length}건</span>` : ''}</div>
     ${pending.length ? `<table class="tbl">
-      <thead><tr><th>이름</th><th>이메일</th><th>승인 시 권한</th><th></th></tr></thead>
+      <thead><tr><th>이름</th><th>아이디</th><th>승인 시 권한</th><th></th></tr></thead>
       <tbody>${pendingRows}</tbody></table>`
     : `<div class="empty" style="padding:18px;">대기 중인 가입 신청이 없습니다.</div>`}
   </div>
@@ -1226,7 +1284,7 @@ function renderUsers(){
   <div class="card" style="margin-top:14px;">
     <div class="section-title">회원 목록 <span class="chip gray">${others.length}명</span></div>
     ${others.length ? `<table class="tbl">
-      <thead><tr><th>이름</th><th>이메일</th><th>상태</th><th>권한</th><th>권한 설명</th><th></th></tr></thead>
+      <thead><tr><th>이름</th><th>아이디</th><th>상태</th><th>권한</th><th>권한 설명</th><th></th></tr></thead>
       <tbody>${otherRows}</tbody></table>`
     : `<div class="empty" style="padding:18px;">아직 승인된 회원이 없습니다.</div>`}
   </div>
@@ -1749,12 +1807,12 @@ function setTab(tab){
   if(!canViewTab(tab)) tab = 'dashboard';
   activeTab = tab;
   document.querySelectorAll('.navbtn').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
-  const titles = {dashboard:'대시보드', plan:'식단표', menus:'메뉴 관리', ingredients:'재료·상품 관리', service:'용역부 식단 · 도시락', order:'재료구매 · 발주', cost:'원가분석표', settings:'설정 · 거래처', users:'회원 관리'};
+  const titles = {dashboard:'대시보드', plan:'영업부 식단표', menus:'메뉴 관리', ingredients:'재료·상품 관리', service:'용역부 식단표 · 도시락', order:'재료구매 · 발주', cost:'원가분석표', settings:'설정 · 거래처', users:'회원 관리'};
   const subs = {
     dashboard:'이번 주 급식 현황을 한눈에 확인합니다',
-    plan:'평일 식단을 편성하고 랜덤 식단표를 생성합니다',
+    plan:'영업부가 사내에서 먹는 점심 식단을 편성합니다 (간식표도 여기서 관리)',
     menus:'원하는 메뉴를 등록하고 사용 재료·원가를 관리합니다',
-    service:'전날 영업부 식단을 이어받는 용역부 도시락을 구성하고 비용을 계산합니다',
+    service:'용역부는 전날 영업부 식단을 도시락으로 받습니다 (월요일은 사먹는 날)',
     ingredients:'메뉴에서 쓰는 재료가 실제로 어떤 상품·단위·가격으로 구매되는지 등록합니다',
     order:'식단표에 맞춰 재료 발주서를 만들고 발주·결제 상태를 관리합니다',
     cost:'기간별 식재료비와 예산 대비 현황을 분석합니다',
@@ -2010,7 +2068,7 @@ function renderServiceStrip(dates){
   return `<div style="margin-top:18px;">
     <div class="flex-between" style="margin-bottom:8px;">
       <div class="section-title" style="margin-bottom:0;">🍱 용역부 도시락 <span class="hint">전날 영업부 식단이 다음 날 용역부로 연결됩니다 · 용역부 ${hc}명</span></div>
-      <a class="linklike no-print" onclick="setTab('service')">용역부 식단에서 구성하기 →</a>
+      <a class="linklike no-print" onclick="setTab('service')">용역부 식단표에서 구성하기 →</a>
     </div>
     <div class="monthgrid">${cells}</div>
   </div>`;
