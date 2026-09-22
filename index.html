@@ -219,6 +219,14 @@ try{ var _tm = localStorage.getItem('meal_app_theme_mode');
   .monthcell.today{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);}
   .monthcell .mc-head{display:flex;justify-content:space-between;font-size:11px;font-weight:700;}
   .monthcell .mc-body{font-size:11px;color:var(--ink-soft);line-height:1.5;}
+  /* 월간 보기 — 메뉴를 쉼표로 잇지 않고 분류(밥·국·메인·반찬)별로 한 줄씩 끊어 보여준다.
+   * 왼쪽 색막대는 인쇄물과 같은 분류색을 써서, 화면과 인쇄물의 색이 서로 어긋나지 않게 한다. */
+  .monthcell .mc-line{display:flex;align-items:baseline;gap:6px;padding:1px 0 1px 7px;
+    border-left:3px solid var(--border);border-radius:1px;margin-bottom:3px;line-height:1.35;}
+  .monthcell .mc-cat{flex:none;min-width:30px;font-size:9.5px;font-weight:700;letter-spacing:.02em;color:var(--ink-faint);}
+  .monthcell .mc-menu{font-size:11.5px;color:var(--ink);font-weight:500;word-break:keep-all;}
+  .monthcell .mc-memo{margin-top:2px;padding-top:3px;border-top:1px dashed var(--border-soft);
+    font-size:10.5px;color:var(--ink-faint);word-break:keep-all;}
   .monthcell .mc-cost{margin-top:auto;font-size:11px;font-family:"IBM Plex Mono",monospace;font-weight:600;}
   .monthweekrow{display:flex;flex-direction:column;gap:6px;margin-bottom:10px;}
   .view-toggle{display:inline-flex;border:1px solid var(--border);border-radius:9px;overflow:hidden;}
@@ -367,6 +375,19 @@ try{ var _tm = localStorage.getItem('meal_app_theme_mode');
   .snackrow .sr-nums label{display:flex;flex-direction:column;align-items:stretch;gap:2px;font-size:10px;color:var(--ink-faint);flex:1;min-width:0;white-space:nowrap;}
   .snackrow .sr-nums input{width:100%;min-width:0;text-align:right;font-size:12px;padding:3px 5px;}
   .snackrow .sr-nums .iconbtn{flex:none;width:24px;height:24px;align-self:flex-end;}
+  /* 간식 줄 — 재료·상품/메뉴에 연결하면 단가를 자동으로 가져온다.
+   * 카드 폭이 좁아 한 줄에 다 넣으면 숫자가 붙어버리므로 "수량줄 / 금액줄"로 나눈다. */
+  .snackrow .sr-pick{width:100%;font-size:12px;padding:3px 5px;}
+  .snackrow .sr-link{font-size:10.5px;color:var(--accent-strong);line-height:1.3;}
+  .snackrow .sr-nums{align-items:flex-end;}
+  .snackrow .sr-nums label{flex:0 1 auto;}
+  .snackrow .sr-unit{flex:none;font-size:11px;color:var(--ink-faint);padding-bottom:4px;}
+  .snackrow .sr-nums .iconbtn{margin-left:auto;}
+  .snackrow .sr-price{display:flex;align-items:center;gap:6px;font-size:10.5px;color:var(--ink-faint);
+    border-top:1px dashed var(--border-soft);padding-top:5px;}
+  .snackrow .sr-price input{width:74px;text-align:right;font-size:12px;padding:3px 5px;}
+  .snackrow .sr-price .sr-auto{font-size:12px;font-weight:600;color:var(--ink);}
+  .snackrow .sr-sub{margin-left:auto;font-size:12.5px;font-weight:700;color:var(--ink);}
 </style>
 
 <div id="authGate" hidden>
@@ -2392,7 +2413,17 @@ function renderPlanMonth(){
         if(!day){ bodyHtml = '<span class="muted">식단 없음</span>'; }
         else if(day.lunch.type==='delivery'){ bodyHtml = `🚚 ${esc(day.lunch.theme)}`; themeBadge = day.lunch.theme; }
         else {
-          bodyHtml = (day.lunch.slots||[]).filter(s=>s.id).map(s=>{const m=menuById(s.id);return m?esc(m.name):'';}).filter(Boolean).join(', ') || '<span class="muted">미편성</span>';
+          const lines = (day.lunch.slots||[]).filter(s=>s.id).map(s=>{
+            const m = menuById(s.id); if(!m) return '';
+            const cat = s.cat || m.category || '';
+            const bar = PRINT_CAT_SWATCH[catColor(cat)] || '';
+            return `<div class="mc-line"${bar?` style="border-left-color:${bar};"`:''}>`
+                 + `<span class="mc-cat">${esc(catLabel(cat))}</span>`
+                 + `<span class="mc-menu">${esc(m.name)}</span></div>`;
+          }).filter(Boolean).join('');
+          const memo = (day.lunch.memo||'').trim();
+          bodyHtml = (lines || '<span class="muted">미편성</span>')
+                   + (memo ? `<div class="mc-memo">📝 ${esc(memo)}</div>` : '');
           themeBadge = day.lunch.theme;
         }
         if(day) costHtml = fmtWon(dayCost(key).total);
@@ -2473,16 +2504,16 @@ function renderSnackTable(dates){
     const itemRows = items.map((it,idx)=>`
       <tr>
         <td>${idx===0?`<b>${WD_LABEL[i]} ${fmtMD(d)}</b>`:''}</td>
-        <td><input value="${esc(it.name)}" onchange="updateSnackItem('${key}',${idx},'name',this.value)"></td>
+        <td><input value="${esc(snackItemName(it))}" onchange="updateSnackItem('${key}',${idx},'name',this.value)"></td>
         <td class="num"><input type="number" value="${it.qty}" style="text-align:right;" onchange="updateSnackItem('${key}',${idx},'qty',this.value)"></td>
-        <td class="num printhide"><input type="number" value="${it.unitPrice}" style="text-align:right;" onchange="updateSnackItem('${key}',${idx},'unitPrice',this.value)"></td>
-        <td class="num printhide">${fmtWon(it.qty*it.unitPrice)}</td>
+        <td class="num printhide"><input type="number" value="${snackItemUnitPrice(it)}" style="text-align:right;" onchange="updateSnackItem('${key}',${idx},'unitPrice',this.value)"></td>
+        <td class="num printhide">${fmtWon(snackItemSubtotal(it))}</td>
         <td><button class="iconbtn no-print" onclick="removeSnackItem('${key}',${idx})">✕</button></td>
       </tr>`).join('');
     const empty = items.length===0 ? `<tr><td><b>${WD_LABEL[i]} ${fmtMD(d)}</b></td><td colspan="5" class="muted">간식 없음</td></tr>` : '';
     return itemRows+empty+`<tr class="no-print"><td></td><td colspan="5"><a class="linklike" onclick="addSnackItem('${key}')">+ 간식 항목 추가</a></td></tr>`;
   }).join('');
-  const weekTotal = dates.reduce((s,d)=>{ const day=S.mealPlan[toKey(d)]; return s+((day&&day.snack&&day.snack.items||[]).reduce((a,it)=>a+it.qty*it.unitPrice,0)); },0);
+  const weekTotal = dates.reduce((s,d)=>s+snackDayTotal(toKey(d)), 0);
   return `<div class="twrap"><table class="snack-table"><thead><tr><th>요일</th><th>간식명</th><th class="num">수량</th><th class="num printhide">단가</th><th class="num printhide">소계</th><th class="no-print"></th></tr></thead><tbody>${rows}</tbody>
   <tfoot class="printhide"><tr><td colspan="4" style="text-align:right;font-weight:700;">주간 간식 합계</td><td class="num" style="font-weight:700;">${fmtWon(weekTotal)}</td><td></td></tr></tfoot></table></div>
   <p class="muted" style="margin-top:10px;font-size:12px;">※ 용역부 등 별도 인원을 위한 간식 목록입니다. 수량은 인원수와 별개로 직접 입력합니다.</p>`;
@@ -3209,8 +3240,91 @@ function snackItemsOf(dateKey){
   const day = S.mealPlan[dateKey];
   return (day && day.snack && day.snack.items) || [];
 }
+/* 간식 한 줄은 세 가지 상태를 가진다.
+ *   - 재료·상품 관리 항목에 연결(ingId) : 단가 = 구매가 ÷ 구매수량 (기본단위 1개당)
+ *   - 메뉴 관리 항목에 연결(menuId)     : 단가 = 그 메뉴의 1인 원가
+ *   - 직접 입력(연결 없음)              : 예전처럼 unitPrice 를 손으로 적는다(하위호환)
+ * 연결된 항목이 삭제됐으면 조용히 직접 입력으로 취급해, 저장된 이름·단가가 남아있게 한다. */
+function snackLinkOf(it){
+  if(it && it.ingId){ const reg = ingredientById(it.ingId); if(reg) return {kind:'ing', reg}; }
+  if(it && it.menuId){ const m = menuById(it.menuId); if(m) return {kind:'menu', menu:m}; }
+  return {kind:'free'};
+}
+function snackItemName(it){
+  const L = snackLinkOf(it);
+  if(L.kind==='ing') return L.reg.name;
+  if(L.kind==='menu') return L.menu.name;
+  return (it && it.name) || '';
+}
+function snackItemUnit(it){
+  const L = snackLinkOf(it);
+  if(L.kind==='ing') return L.reg.baseUnit || '개';
+  if(L.kind==='menu') return '인분';
+  return '개';
+}
+function snackItemUnitPrice(it){
+  const L = snackLinkOf(it);
+  if(L.kind==='ing') return L.reg.purchaseQty ? (L.reg.purchasePrice||0)/L.reg.purchaseQty : 0;
+  if(L.kind==='menu') return menuCost(L.menu);
+  return Number(it && it.unitPrice) || 0;
+}
+function snackItemSubtotal(it){ return (Number(it && it.qty)||0) * snackItemUnitPrice(it); }
 function snackDayTotal(dateKey){
-  return snackItemsOf(dateKey).reduce((s,it)=>s + (Number(it.qty)||0) * (Number(it.unitPrice)||0), 0);
+  return snackItemsOf(dateKey).reduce((s,it)=>s + snackItemSubtotal(it), 0);
+}
+/** 분류 이름만 보고 "간식 성격"인지 판단한다.
+ *  분류는 사용자가 직접 추가할 수 있으므로(간식·후식·디저트 등 무엇을 만들든) 고정 목록 대신 이름으로 본다. */
+const SNACK_CAT_RE = /간식|후식|디저트/;
+function isSnackCat(c){ return SNACK_CAT_RE.test(String(c||'')); }
+/** 간식 줄의 "품목 선택" 드롭다운 — 재료·상품 관리와 메뉴 관리에 등록된 것만 보여준다(임의 생성 없음).
+ *  분류가 간식·후식·디저트인 항목을 맨 위 묶음으로 따로 올려, 간식표에서 바로 고를 수 있게 한다.
+ *  나머지는 아래에 분류별로 묶여 그대로 남는다(무엇이든 고를 수 있어야 하므로 감추지 않는다). */
+function snackLinkOptions(it){
+  const cur = (it && it.ingId) ? ('ing:'+it.ingId) : ((it && it.menuId) ? ('menu:'+it.menuId) : '');
+  const sortKo = (a,b)=>String(a.name||'').localeCompare(String(b.name||''),'ko');
+  const opt = (v,label)=>`<option value="${v}"${cur===v?' selected':''}>${esc(label)}</option>`;
+  const group = (label, opts)=> opts ? `<optgroup label="${esc(label)}">${opts}</optgroup>` : '';
+
+  const ings = (S.ingredients||[]).slice().sort(sortKo);
+  const menus = (S.menus||[]).slice().sort(sortKo);
+
+  // 1) 간식 묶음 — 재료·상품이 먼저, 이어서 같은 성격의 메뉴
+  const snackIngs  = ings.filter(g=>isSnackCat(g.category));
+  const snackMenus = menus.filter(m=>isSnackCat(m.category));
+  const snackOpts = snackIngs.map(g=>opt('ing:'+g.id, g.name + ' · 상품')).join('')
+                  + snackMenus.map(m=>opt('menu:'+m.id, m.name + ' · 메뉴')).join('');
+
+  // 2) 나머지 재료·상품 — 분류별 묶음(분류 순서는 재료·상품 관리와 동일)
+  const restIngs = ings.filter(g=>!isSnackCat(g.category));
+  const catRank = c => { const i = ING_CATS.indexOf(c); return i<0 ? 999 : i; };
+  const ingCats = [...new Set(restIngs.map(g=>g.category||'기타'))]
+    .sort((a,b)=> (catRank(a)-catRank(b)) || a.localeCompare(b,'ko'));
+  const restIngGroups = ingCats.map(c=>
+    group('재료·상품 · '+c, restIngs.filter(g=>(g.category||'기타')===c).map(g=>opt('ing:'+g.id, g.name)).join(''))
+  ).join('');
+
+  // 3) 나머지 메뉴
+  const restMenus = menus.filter(m=>!isSnackCat(m.category));
+
+  return opt('','직접 입력')
+    + group('간식 · 후식', snackOpts)
+    + restIngGroups
+    + group('메뉴 관리', restMenus.map(m=>opt('menu:'+m.id, m.name)).join(''));
+}
+/** 품목 연결을 바꾼다. 연결하면 이름도 등록된 이름으로 맞추고, 직접 입력으로 되돌리면 이름은 그대로 둔다. */
+async function setSnackItemLink(key, idx, val){
+  const day = S.mealPlan[key]; if(!day || !day.snack || !day.snack.items[idx]) return;
+  const it = day.snack.items[idx];
+  if(val && val.indexOf('ing:')===0){
+    it.ingId = val.slice(4); it.menuId = '';
+    const reg = ingredientById(it.ingId); if(reg) it.name = reg.name;
+  } else if(val && val.indexOf('menu:')===0){
+    it.menuId = val.slice(5); it.ingId = '';
+    const m = menuById(it.menuId); if(m) it.name = m.name;
+  } else {
+    it.ingId = ''; it.menuId = '';
+  }
+  await saveMealPlanDay(key, day); render();
 }
 /** 월간 달력에서 바로 추가할 때 — 이름만 묻고 수량·단가는 주간 화면에서 다듬는다. */
 async function addSnackItemByName(dateKey){
@@ -3229,15 +3343,29 @@ function renderServiceSnackWeek(){
     const key = toKey(d);
     const items = snackItemsOf(key);
     const isToday = sameDate(d, today);
-    const rows = items.map((it,idx)=>`
+    const rows = items.map((it,idx)=>{
+      const L = snackLinkOf(it);
+      const linked = L.kind !== 'free';
+      const priceField = linked
+        ? `<span class="sr-auto num" title="${L.kind==='ing'?'재료·상품 관리에 등록된 구매가에서 자동 계산됩니다':'메뉴 관리의 1인 원가에서 자동 계산됩니다'}">${fmtWon(snackItemUnitPrice(it))}</span><span>자동</span>`
+        : `<input type="number" value="${it.unitPrice||0}" title="단가(원)" onchange="updateSnackItem('${key}',${idx},'unitPrice',this.value)">`;
+      return `
       <div class="snackrow">
-        <input value="${esc(it.name)}" class="sr-name" placeholder="간식명" onchange="updateSnackItem('${key}',${idx},'name',this.value)">
+        <select class="sr-pick" onchange="setSnackItemLink('${key}',${idx},this.value)">${snackLinkOptions(it)}</select>
+        ${linked
+          ? `<div class="sr-link">${L.kind==='ing'?'재료·상품':'메뉴'} · ${esc(snackItemName(it))}</div>`
+          : `<input value="${esc(it.name||'')}" class="sr-name" placeholder="간식명" onchange="updateSnackItem('${key}',${idx},'name',this.value)">`}
         <div class="sr-nums">
           <label title="수량">수량<input type="number" value="${it.qty}" onchange="updateSnackItem('${key}',${idx},'qty',this.value)"></label>
-          <label class="printhide" title="단가(원)">단가<input type="number" value="${it.unitPrice}" onchange="updateSnackItem('${key}',${idx},'unitPrice',this.value)"></label>
+          <span class="sr-unit">${esc(snackItemUnit(it))}</span>
           <button class="iconbtn" onclick="removeSnackItem('${key}',${idx})">✕</button>
         </div>
-      </div>`).join('');
+        <div class="sr-price printhide">
+          <span>단가</span>${priceField}
+          <b class="sr-sub num">${fmtWon(snackItemSubtotal(it))}</b>
+        </div>
+      </div>`;
+    }).join('');
     return `<div class="daycard${isToday?' today':''}">
       <div class="dhead"><span class="d">${WD_LABEL[i]} · ${fmtMD(d)}</span>${items.length?`<span class="chip gray" style="font-size:10px;">${items.length}품목</span>`:''}</div>
       ${items.length ? `<div class="stack" style="gap:6px;">${rows}</div>` : `<div class="muted" style="font-size:12px;padding:6px 0;">간식 없음</div>`}
@@ -3254,7 +3382,7 @@ function renderServiceSnackWeek(){
   </div>`;
   return summary + renderSnackPrintWeek(dates)
     + `<div class="daygrid screenonly">${cards}</div>
-    <p class="muted screenonly" style="margin-top:14px;font-size:12px;">※ 수량은 인원수와 별개로 직접 입력합니다(기본값은 용역부 인원). 단가를 넣으면 금액과 발주 집계에 함께 반영됩니다.</p>`;
+    <p class="muted screenonly" style="margin-top:14px;font-size:12px;">※ 품목을 <b>재료·상품 관리</b>나 <b>메뉴 관리</b>에 등록된 것으로 고르면 단가를 자동으로 가져옵니다(등록처에서 가격을 고치면 여기도 함께 바뀝니다). 목록에 없는 것은 "직접 입력"으로 두고 단가를 적으면 됩니다. 수량은 인원수와 별개로 직접 넣습니다(기본값은 용역부 인원).</p>`;
 }
 function renderServiceSnackMonth(){
   const first = new Date(serviceMonth.y, serviceMonth.m, 1);
@@ -3271,7 +3399,7 @@ function renderServiceSnackMonth(){
       const items = inMonth ? snackItemsOf(key) : [];
       if(inMonth) monthTotal += snackDayTotal(key);
       const chips = items.length
-        ? items.map((it,idx)=>`<div class="snackchip">${esc(it.name)} <span class="muted">×${it.qty}</span><button class="chipx no-print" onclick="event.stopPropagation();removeSnackItem('${key}',${idx})">✕</button></div>`).join('')
+        ? items.map((it,idx)=>`<div class="snackchip">${esc(snackItemName(it))} <span class="muted">×${it.qty}</span><button class="chipx no-print" onclick="event.stopPropagation();removeSnackItem('${key}',${idx})">✕</button></div>`).join('')
         : '<span class="muted" style="font-size:11px;">간식 없음</span>';
       return `<div class="monthcell${sameDate(d,today)?' today':''}" style="${inMonth?'':'opacity:.4;'}">
         <div class="mc-head"><span>${WD_LABEL[i]} ${fmtMD(d)}</span></div>
@@ -3298,7 +3426,7 @@ function renderSnackPrintWeek(dates){
   const body = Array.from({length:maxRows}).map((_,r)=>{
     const cells = dates.map(d=>{
       const it = snackItemsOf(toKey(d))[r];
-      return `<td>${it ? `<div class="ps-item">${esc(it.name)}</div><div class="ps-date">×${it.qty}</div>` : '<span class="ps-empty">—</span>'}</td>`;
+      return `<td>${it ? `<div class="ps-item">${esc(snackItemName(it))}</div><div class="ps-date">×${it.qty}${esc(snackItemUnit(it))}</div>` : '<span class="ps-empty">—</span>'}</td>`;
     }).join('');
     return `<tr class="pk5"><th class="ps-cat">${r+1}</th>${cells}</tr>`;
   }).join('');
@@ -3317,7 +3445,7 @@ function renderSnackPrintMonth(weeks){
       const inMonth = d.getMonth()===serviceMonth.m;
       const items = inMonth ? snackItemsOf(toKey(d)) : [];
       const body = items.length
-        ? items.map(it=>`<div class="pm-item pk5">${esc(it.name)} ×${it.qty}</div>`).join('')
+        ? items.map(it=>`<div class="pm-item pk5">${esc(snackItemName(it))} ×${it.qty}</div>`).join('')
         : (inMonth ? '<span class="ps-empty" style="font-size:11px;">—</span>' : '');
       return `<td class="${inMonth?'':'pm-out'}"><div class="pm-date">${fmtMD(d)}</div>${body}</td>`;
     }).join('');
@@ -3486,9 +3614,28 @@ async function buildOrderAggregation(monday, opts){
     }
     if(includeSnack && day.snack && day.snack.items){
       day.snack.items.forEach(it=>{
-        const k = 'name:'+it.name+'|개';
-        if(!agg[k]) agg[k] = {ingId:'', name:it.name, unit:'개', qty:0, unitPrice:it.unitPrice};
-        agg[k].qty += it.qty;
+        const qty = Number(it.qty)||0;
+        if(!qty) return;
+        const L = snackLinkOf(it);
+        if(L.kind==='ing'){
+          // 재료·상품에 연결된 간식은 그 상품 줄에 그대로 합쳐진다(수량은 이미 기본단위 기준)
+          const k = 'ing:'+it.ingId;
+          if(!agg[k]) agg[k] = {ingId: it.ingId, name: L.reg.name, unit: L.reg.baseUnit||'개', qty:0, unitPrice:0};
+          agg[k].qty += qty;
+        } else if(L.kind==='menu'){
+          // 메뉴에 연결된 간식은 그 메뉴의 재료를 "수량(인분)"만큼 풀어서 합친다.
+          // (고정수량 재료는 1회분이므로 여기서 더하지 않는다 — 용역부 기본식사 합산과 같은 규칙)
+          (L.menu.ingredients||[]).forEach(ing=>{
+            const k = ing.ingId ? ('ing:'+ing.ingId) : ('name:'+ing.n+'|'+ing.u);
+            const reg = ing.ingId ? ingredientById(ing.ingId) : null;
+            if(!agg[k]) agg[k] = {ingId: ing.ingId||'', name: ing.n, unit: (reg&&reg.baseUnit)||ing.u, qty:0, unitPrice: ing.p};
+            agg[k].qty += ingRowPerPersonQty(ing) * qty * ingRowBaseFactor(ing);
+          });
+        } else {
+          const k = 'name:'+it.name+'|개';
+          if(!agg[k]) agg[k] = {ingId:'', name:it.name, unit:'개', qty:0, unitPrice: Number(it.unitPrice)||0};
+          agg[k].qty += qty;
+        }
       });
     }
   });
