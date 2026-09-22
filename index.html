@@ -3262,7 +3262,9 @@ function renderService(){
     return header + note + (serviceView==='month' ? renderServiceSnackMonth() : renderServiceSnackWeek());
   }
   const note = `<div class="card tight no-print screenonly" style="margin-bottom:14px;">
-      <p class="muted" style="font-size:11.8px;margin:0;">용역부는 <b>전날 영업부 식단</b>을 도시락으로 받습니다 — 화 ← 월, 수 ← 화, 목 ← 수, 금 ← 목. <b>월요일은 사먹는 날</b>이라 도시락이 없고, <b>영업부 금요일 식단</b>은 용역부로 연결되지 않습니다. 기본 식사는 연결된 영업부 식단을 그대로 따라가며, 이 화면에서는 용역부에게만 추가되는 후식·간식만 선택합니다. 1인 비용에는 포장용기 ${fmtWon(packagingCostPerPerson())} + 발열팩 ${fmtWon(heatingPackCostPerPerson())}이 자동으로 더해집니다.</p>
+      <p class="muted" style="font-size:11.8px;margin:0;">${isReadOnly()
+        ? '용역부는 <b>전날 영업부 식단</b>을 도시락으로 받습니다 — 화 ← 월, 수 ← 화, 목 ← 수, 금 ← 목. <b>월요일은 사먹는 날</b>이라 도시락이 없습니다.'
+        : `용역부는 <b>전날 영업부 식단</b>을 도시락으로 받습니다 — 화 ← 월, 수 ← 화, 목 ← 수, 금 ← 목. <b>월요일은 사먹는 날</b>이라 도시락이 없고, <b>영업부 금요일 식단</b>은 용역부로 연결되지 않습니다. 기본 식사는 연결된 영업부 식단을 그대로 따라가며, 이 화면에서는 용역부에게만 추가되는 후식·간식만 선택합니다. 1인 비용에는 포장용기 ${fmtWon(packagingCostPerPerson())} + 발열팩 ${fmtWon(heatingPackCostPerPerson())}이 자동으로 더해집니다.`}</p>
     </div>`;
   return header + note + `<div class="screenonly">${serviceView==='month' ? renderServiceMonth() : renderServiceWeek()}</div>`;
 }
@@ -3521,6 +3523,29 @@ function renderServiceWeek(){
     const baseHtml = baseLines.length
       ? baseLines.map(l=>`<div style="font-size:12px;"><span class="muted">${esc(l.cat)}</span> ${esc(l.name)}</div>`).join('')
       : `<div class="muted" style="font-size:11.5px;">연결된 영업부 식단이 아직 편성되지 않았습니다</div>`;
+    if(isReadOnly()){
+      // 최종 식단만 보여준다 — 포함 여부·선택 상자·메모칸 없이, 영업부 식단표와 같은 분류별 줄로.
+      const line = (cat,name)=>{
+        const bar = PRINT_CAT_SWATCH[catColor(cat)] || '';
+        return `<div class="mc-line"${bar?` style="border-left-color:${bar};"`:''}>`
+             + `<span class="mc-cat">${esc(catLabel(cat))}</span>`
+             + `<span class="mc-menu">${esc(name)}</span></div>`;
+      };
+      const activeNames = ids => (ids||[]).map(serviceMenuById)
+        .filter(sm=>sm && sm.isActive!==false).map(sm=>sm.name);
+      const parts = [];
+      if(rec.useSourceMeal!==false) baseLines.forEach(l=>parts.push(line(l.cat, l.name)));
+      activeNames(rec.dessertIds).forEach(nm=>parts.push(line('후식', nm)));
+      activeNames(rec.snackIds).forEach(nm=>parts.push(line('간식', nm)));
+      return `<div class="daycard${isToday?' today':''}">
+        <div class="dhead">
+          <span class="d">${WD_LABEL[i]} · ${fmtMD(d)}</span>
+          <span class="chip green" style="font-size:10px;padding:2px 7px;">${esc(srcLabel)}</span>
+        </div>
+        <div class="readlines">${parts.length ? parts.join('') : '<span class="muted" style="font-size:12px;">아직 편성되지 않았습니다</span>'}</div>
+        ${rec.memo ? `<div class="readmemo">📝 ${esc(rec.memo)}</div>` : ''}
+      </div>`;
+    }
     return `<div class="daycard${isToday?' today':''}">
       <div class="dhead">
         <span class="d">${WD_LABEL[i]} · ${fmtMD(d)}</span>
@@ -3557,10 +3582,10 @@ function renderServiceWeek(){
   return `<div class="daygrid">${cards}</div>
   <div class="grid cols-3" style="margin-top:16px;">
     <div class="card stat-tile tight"><span class="label">이번 주 용역부 도시락</span><span class="value num">${lunchboxDays}일</span><span class="sub">월요일은 사먹는 날</span></div>
-    <div class="card stat-tile tight"><span class="label">용역부 인원</span><span class="value num">${serviceHeadcount()}명</span><span class="sub">설정 · 거래처에서 변경</span></div>
+    <div class="card stat-tile tight"><span class="label">용역부 인원</span><span class="value num">${serviceHeadcount()}명</span><span class="sub">${canViewTab('settings')?'설정 · 거래처에서 변경':'도시락 인원 기준'}</span></div>
     ${money(`<div class="card stat-tile tight"><span class="label">이번 주 용역부 총비용</span><span class="value num">${fmtWon(weekTotal)}</span><span class="sub">기본식사+후식+간식+포장비</span></div>`)}
   </div>
-  <p class="muted" style="font-size:11.5px;margin-top:10px;">※ 후식·간식 항목은 메뉴 관리 탭의 "용역부 추가 메뉴 관리"에서 등록한 것만 선택할 수 있습니다. 식단표 탭의 "간식표(용역부)"는 예전부터 쓰던 자유 입력표로, 이 화면과는 별개로 그대로 유지됩니다.</p>`;
+  ${isReadOnly() ? '' : '<p class="muted" style="font-size:11.5px;margin-top:10px;">※ 후식·간식 항목은 메뉴 관리 탭의 "용역부 추가 메뉴 관리"에서 등록한 것만 선택할 수 있습니다. 식단표 탭의 "간식표(용역부)"는 예전부터 쓰던 자유 입력표로, 이 화면과는 별개로 그대로 유지됩니다.</p>'}`;
 }
 function renderServiceMonth(){
   const first = new Date(serviceMonth.y, serviceMonth.m, 1);
