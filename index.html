@@ -388,6 +388,17 @@ try{ var _tm = localStorage.getItem('meal_app_theme_mode');
   .snackrow .sr-price input{width:74px;text-align:right;font-size:12px;padding:3px 5px;}
   .snackrow .sr-price .sr-auto{font-size:12px;font-weight:600;color:var(--ink);}
   .snackrow .sr-sub{margin-left:auto;font-size:12.5px;font-weight:700;color:var(--ink);}
+  /* 보기 전용 계정용 간식 줄 — 입력칸 없이 품목과 수량만 */
+  .snackread{display:flex;align-items:baseline;gap:8px;padding:5px 9px;border:1px solid var(--border-soft);
+    border-radius:8px;background:var(--surface-2);margin-bottom:5px;}
+  .snackread .sr-rname{flex:1;min-width:0;font-size:12.5px;font-weight:500;color:var(--ink);word-break:keep-all;}
+  .snackread .sr-rqty{flex:none;font-size:11.5px;color:var(--ink-soft);font-variant-numeric:tabular-nums;}
+  /* 보기 전용 계정의 식단 카드 — 입력칸 대신 분류별 읽기 줄 */
+  .readlines .mc-line{display:flex;align-items:baseline;gap:6px;padding:2px 0 2px 7px;
+    border-left:3px solid var(--border);border-radius:1px;margin-bottom:4px;line-height:1.35;}
+  .readlines .mc-cat{flex:none;min-width:32px;font-size:10px;font-weight:700;color:var(--ink-faint);}
+  .readlines .mc-menu{font-size:12.5px;color:var(--ink);font-weight:500;word-break:keep-all;}
+  .readmemo{font-size:11.5px;color:var(--ink-faint);border-top:1px dashed var(--border-soft);padding-top:5px;word-break:keep-all;}
 </style>
 
 <div id="authGate" hidden>
@@ -600,11 +611,14 @@ function addDays(d,n){const r=new Date(d);r.setDate(r.getDate()+n);return r;}
 function weekDates(mon){return [0,1,2,3,4].map(i=>addDays(mon,i));}
 /** 금액 표시. 금액 열람 권한이 없는 계정(일반)에게는 숫자를 내보내지 않는다.
  *  앱 안의 모든 금액 출력은 이 함수 하나를 거치므로, 여기서 막으면 화면 전체에서 함께 막힌다. */
-const MONEY_MASK = '••••';
+const MONEY_MASK = '';
 function fmtWon(n){
   if(!canSeeMoney()) return MONEY_MASK;
   return Math.round(n||0).toLocaleString('ko-KR')+'원';
 }
+/** 금액이 들어간 화면 조각을 통째로 감싼다. 금액 열람 권한이 없으면 그 조각을 아예 그리지 않는다.
+ *  (숫자만 가리면 빈 칸과 라벨이 남아 오히려 어수선해지므로, 칸 자체를 없앤다) */
+function money(html){ return canSeeMoney() ? html : ''; }
 function fmtMD(d){return (d.getMonth()+1)+'.'+pad(d.getDate());}
 function sameDate(a,b){return toKey(a)===toKey(b);}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
@@ -987,7 +1001,7 @@ function canSeeMoney(){ return canEdit(); }
 function isReadOnly(){ return !canEdit(); }
 
 /** 일반 계정에게도 보여줄 탭 목록. 여기 없는 탭은 사이드바에서 숨기고 직접 진입도 막는다. */
-const TABS_FOR_GENERAL = ['dashboard','plan','menus','ingredients','service','order'];
+const TABS_FOR_GENERAL = ['dashboard','plan','service'];
 function canViewTab(tab){
   if(tab === 'users') return isAdmin();
   if(canEdit()) return true;
@@ -1984,7 +1998,7 @@ function renderTopStats(){
   const unpaid = S.orders.filter(o=>o.payment && o.payment.status==='미결제').length;
   el.innerHTML = `
     <span class="chip gray">👥 ${hc}인 기준</span>
-    <span class="chip ${unpaid>0?'amber':'green'}">미결제 발주 ${unpaid}건</span>
+    ${money(`<span class="chip ${unpaid>0?'amber':'green'}">미결제 발주 ${unpaid}건</span>`)}
     <span class="chip gray">${today.getFullYear()}.${pad(today.getMonth()+1)}.${pad(today.getDate())}</span>
   `;
 }
@@ -2042,7 +2056,7 @@ async function renderDashboard(){
   let orderAmount=0, doneCount=0, totalItemCount=0;
   if(hasOrder){
     weekOrders.forEach(o=>{ orderAmount+=o.totalCost||0; const items=o.items||[]; totalItemCount+=items.length; doneCount+=items.filter(orderItemDone).length; });
-  } else {
+  } else if(canSeeMoney()){
     const agg = await buildOrderAggregation(currentWeekMonday, {includeSnack:true});
     totalItemCount = agg.items.length;
   }
@@ -2060,7 +2074,7 @@ async function renderDashboard(){
     return `<div class="daycard${isToday?' today':''}">
       <div class="dhead"><span class="d">${WD_LABEL[i]} · ${fmtMD(d)}</span><span class="chip ${THEME_COLOR[day.lunch.theme]||'gray'}" style="font-size:10.5px;padding:2px 7px;">${esc(day.lunch.theme)}</span></div>
       ${body}
-      <div class="daycost"><span class="muted">1인 ${fmtWon(c.perPerson)}</span><b class="num">${fmtWon(c.total)}</b></div>
+      ${money(`<div class="daycost"><span class="muted">1인 ${fmtWon(c.perPerson)}</span><b class="num">${fmtWon(c.total)}</b></div>`)}
     </div>`;
   }).join('');
 
@@ -2073,7 +2087,7 @@ async function renderDashboard(){
     </tr>`).join('') || `<tr><td colspan="4" class="empty">아직 발주 내역이 없습니다</td></tr>`;
 
   return `
-  <div class="grid cols-4" style="margin-bottom:18px;">
+  ${money(`<div class="grid cols-4" style="margin-bottom:18px;">
     <div class="card stat-tile"><span class="label">이번 주 총 식재료비</span><span class="value num">${fmtWon(weekTotal)}</span><span class="sub">간식 포함 · ${S.settings.headcount}인 기준</span></div>
     <div class="card stat-tile"><span class="label">조리일 1인 평균 단가</span><span class="value num">${fmtWon(avgPerPerson)}</span><span class="sub">목표 ${fmtWon(budget)} 대비 <b class="${ratio>100?'':''}">${ratio}%</b></span></div>
     <div class="card stat-tile"><span class="label">등록된 메뉴 수</span><span class="value num">${menuCount}개</span><span class="sub">메뉴 관리에서 추가/수정</span></div>
@@ -2083,13 +2097,13 @@ async function renderDashboard(){
     <div class="card stat-tile"><span class="label">이번 주 발주금액</span><span class="value num">${fmtWon(orderAmount)}</span><span class="sub">${hasOrder?'발주 확정 기준':'아직 발주 전(예상액 아님)'}</span></div>
     <div class="card stat-tile"><span class="label">${hasOrder?'미완료 품목':'발주 필요 품목'}</span><span class="value num" style="color:${(totalItemCount-doneCount)>0?'var(--amber)':'inherit'}">${(totalItemCount-doneCount)}개</span><span class="sub">${hasOrder?'재료구매 탭에서 체크':'재료구매 탭에서 발주서 작성'}</span></div>
     <div class="card stat-tile"><span class="label">발주 완료율</span><span class="value num">${hasOrder?doneRatio+'%':'-'}</span><span class="sub">${hasOrder?`${doneCount}/${totalItemCount}건 완료`:'아직 발주 전'}</span></div>
-  </div>
+  </div>`)}
 
   <div class="section-title">이번 주 식단 미리보기 <span class="hint">${fmtMD(dates[0])} ~ ${fmtMD(dates[4])}</span></div>
   <div class="daygrid" style="margin-bottom:22px;">${dayRows}</div>
 
-  <div class="flex-between" style="margin-bottom:10px;"><div class="section-title" style="margin-bottom:0;">최근 발주 내역</div><a class="linklike" onclick="setTab('order')">재료구매로 이동 →</a></div>
-  <div class="twrap"><table><thead><tr><th>기간</th><th class="num">금액</th><th>상태</th><th>결제</th></tr></thead><tbody>${recentOrders}</tbody></table></div>
+  ${money(`<div class="flex-between" style="margin-bottom:10px;"><div class="section-title" style="margin-bottom:0;">최근 발주 내역</div><a class="linklike" onclick="setTab('order')">재료구매로 이동 →</a></div>
+  <div class="twrap"><table><thead><tr><th>기간</th><th class="num">금액</th><th>상태</th><th>결제</th></tr></thead><tbody>${recentOrders}</tbody></table></div>`)}
   `;
 }
 
@@ -2279,10 +2293,10 @@ function renderPlan(){
         </div>
         <button class="btn no-print" onclick="window.print()">🖨 인쇄</button>
         ${planCat==='lunch' && planView==='week' ? `<button id="randomizeBtn" class="btn primary" onclick="randomizeWeek()" ${randomizing?'disabled':''}>${randomizing?'⏳ 생성 중…':'🔀 랜덤 식단 생성'}</button>` : ''}
-        ${planView==='week' ? `<button class="btn no-print" onclick="gotoOrderForWeek(currentWeekMonday)">📋 이번 주 발주 보기</button>` : ''}
+        ${planView==='week' && canViewTab('order') ? `<button class="btn no-print" onclick="gotoOrderForWeek(currentWeekMonday)">📋 이번 주 발주 보기</button>` : ''}
       </div>
     </div>
-    ${planCat==='lunch' && planView==='week' ? `
+    ${planCat==='lunch' && planView==='week' && canSeeMoney() ? `
     <div class="card tight screenonly printhide" style="margin-bottom:16px;display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;">
       <label class="field" style="min-width:150px;">목표 1인 단가 (원)
         <input type="number" id="budgetFitInput" value="${S.settings.budgetPerPerson}" onchange="updateBudget(this.value)">
@@ -2293,7 +2307,7 @@ function renderPlan(){
 
   if(planView==='month'){
     const monthDates = planMonthDates();
-    const summary = planCat==='lunch' ? planCostSummaryCard(planMonth.y+'년 '+(planMonth.m+1)+'월', planCostSummary(monthDates)) : '';
+    const summary = (planCat==='lunch' && canSeeMoney()) ? planCostSummaryCard(planMonth.y+'년 '+(planMonth.m+1)+'월', planCostSummary(monthDates)) : '';
     return header + summary + renderPlanMonth();
   }
   if(planCat==='snack') return header + renderSnackTable(dates);
@@ -2304,14 +2318,26 @@ function renderPlan(){
     const isToday = sameDate(d, today);
     const c = dayCost(key);
     let body;
-    if(day.lunch.type==='delivery'){
+    if(day.lunch.type==='delivery' && isReadOnly()){
+      body = `<div class="delivery-box"><div><span class="chip amber">🚚 ${esc(day.lunch.theme)}</span></div></div>`;
+    } else if(day.lunch.type==='delivery'){
       body = `<div class="delivery-box">
-        <div class="flex-between"><span class="chip amber">🚚 ${esc(day.lunch.theme)}</span><span class="num" style="font-weight:700;">${fmtWon(day.lunch.deliveryCost)}/인</span></div>
+        <div class="flex-between"><span class="chip amber">🚚 ${esc(day.lunch.theme)}</span>${money(`<span class="num" style="font-weight:700;">${fmtWon(day.lunch.deliveryCost)}/인</span>`)}</div>
         <input class="memo-input" value="${esc(day.lunch.memo||'')}" placeholder="배달 업체 / 메모" onchange="updateDeliveryMemo('${key}',this.value)">
-        <label class="field" style="font-size:11px;">단가(원/인)
+        ${money(`<label class="field" style="font-size:11px;">단가(원/인)
           <input type="number" value="${day.lunch.deliveryCost||0}" onchange="updateDeliveryCost('${key}',this.value)">
-        </label>
+        </label>`)}
       </div>`;
+    } else if(isReadOnly()){
+      const lines = (day.lunch.slots||[]).filter(sl=>sl.id).map(sl=>{
+        const m = menuById(sl.id); if(!m) return '';
+        const cat = sl.cat || m.category || '';
+        const bar = PRINT_CAT_SWATCH[catColor(cat)] || '';
+        return `<div class="mc-line"${bar?` style="border-left-color:${bar};"`:''}>`
+             + `<span class="mc-cat">${esc(catLabel(cat))}</span>`
+             + `<span class="mc-menu">${esc(m.name)}</span></div>`;
+      }).filter(Boolean).join('');
+      body = `<div class="readlines">${lines || '<span class="muted" style="font-size:12px;">아직 편성되지 않았습니다</span>'}</div>`;
     } else {
       const slotRows = (day.lunch.slots||[]).map((slot,idx)=>{
         const options = S.menus.filter(m=>m.category===slot.cat && (m.theme===day.lunch.theme || m.theme==='전체')).map(m=>`<option value="${m.id}" ${slot.id===m.id?'selected':''}>${esc(m.name)}</option>`).join('');
@@ -2330,21 +2356,27 @@ function renderPlan(){
     return `<div class="daycard${isToday?' today':''}">
       <div class="dhead">
         <span class="d">${WD_LABEL[i]} · ${fmtMD(d)}</span>
-        <select style="font-size:11px;padding:2px 5px;" onchange="updateTheme('${key}',${i},this.value)">
+        ${isReadOnly()
+          ? `<span class="chip ${THEME_COLOR[day.lunch.theme]||'gray'}" style="font-size:10.5px;padding:2px 7px;">${esc(day.lunch.theme)}</span>`
+          : `<select style="font-size:11px;padding:2px 5px;" onchange="updateTheme('${key}',${i},this.value)">
           ${THEMES.filter(t=>t!=='전체').map(t=>`<option ${day.lunch.theme===t?'selected':''}>${esc(t)}</option>`).join('')}
-        </select>
+        </select>`}
       </div>
       ${body}
-      <input class="memo-input" value="${esc(day.lunch.memo||'')}" placeholder="메모" onchange="updateMemo('${key}',this.value)">
-      <div class="daycost"><span class="muted">1인 ${fmtWon(c.perPerson)}</span><b class="num">${fmtWon(c.total)}</b></div>
+      ${isReadOnly()
+        ? (day.lunch.memo ? `<div class="readmemo">📝 ${esc(day.lunch.memo)}</div>` : '')
+        : `<input class="memo-input" value="${esc(day.lunch.memo||'')}" placeholder="메모" onchange="updateMemo('${key}',this.value)">`}
+      ${money(`<div class="daycost"><span class="muted">1인 ${fmtWon(c.perPerson)}</span><b class="num">${fmtWon(c.total)}</b></div>`)}
     </div>`;
   }).join('');
 
-  return header + planCostSummaryCard('이번 주(' + fmtMD(dates[0]) + '~' + fmtMD(dates[4]) + ')', planCostSummary(dates))
+  return header + money(planCostSummaryCard('이번 주(' + fmtMD(dates[0]) + '~' + fmtMD(dates[4]) + ')', planCostSummary(dates)))
   + renderPlanPrintWeek(dates)
   + `<div class="daygrid screenonly">${cards}</div>
   <div class="screenonly">${renderServiceStrip(dates)}</div>
-  <p class="muted screenonly" style="margin-top:14px;font-size:12px;">※ 각 카드의 "+ 항목 추가"로 메인·반찬 등을 원하는 개수만큼 자유롭게 넣고, 각 줄의 분류를 바꿔가며 구성할 수 있습니다. 요일 테마를 바꾸면 다음에 새로 추가하는 항목의 선택 폭이 그 테마에 맞춰집니다. 배달일로 바꾸면 슬롯 대신 배달 단가를 입력합니다.</p>`;
+  <p class="muted screenonly" style="margin-top:14px;font-size:12px;">${isReadOnly()
+    ? '※ 이번 주 식단입니다. 🖨 인쇄 버튼으로 요일별 표를 출력할 수 있습니다.'
+    : '※ 각 카드의 "+ 항목 추가"로 메인·반찬 등을 원하는 개수만큼 자유롭게 넣고, 각 줄의 분류를 바꿔가며 구성할 수 있습니다. 요일 테마를 바꾸면 다음에 새로 추가하는 항목의 선택 폭이 그 테마에 맞춰집니다. 배달일로 바꾸면 슬롯 대신 배달 단가를 입력합니다.'}</p>`;
 }
 /** 식단표(영업부) 주간 보기 아래에 붙는 용역부 연결 줄 — 어느 날 식단이 용역부 며칠 도시락으로
  *  이어지는지 한눈에 보여주는 읽기 전용 요약. 실제 구성은 "용역부 식단" 탭에서 한다. */
@@ -2367,7 +2399,7 @@ function renderServiceStrip(dates){
     return `<div class="monthcell" onclick="setTab('service')">
       <div class="mc-head"><span>${WD_LABEL[i]} ${fmtMD(d)}</span>${srcDate?`<span class="chip green" style="font-size:9px;padding:1px 6px;">← ${WD_LABEL[(srcDate.getDay()+6)%7]||''} ${fmtMD(srcDate)}</span>`:''}</div>
       <div class="mc-body">${names.length?esc(names.join(', ')):'<span class="muted">영업부 식단 미편성</span>'}${extra?`<div style="margin-top:2px;">+ 용역부 추가 ${extra}개</div>`:''}</div>
-      <div class="mc-cost">1인 ${fmtWon(c.perPerson)} · 계 ${fmtWon(c.total)}</div>
+      ${money(`<div class="mc-cost">1인 ${fmtWon(c.perPerson)} · 계 ${fmtWon(c.total)}</div>`)}
     </div>`;
   }).join('');
   return `<div style="margin-top:18px;">
@@ -2426,7 +2458,7 @@ function renderPlanMonth(){
                    + (memo ? `<div class="mc-memo">📝 ${esc(memo)}</div>` : '');
           themeBadge = day.lunch.theme;
         }
-        if(day) costHtml = fmtWon(dayCost(key).total);
+        if(day && canSeeMoney()) costHtml = fmtWon(dayCost(key).total);
       }
       return `<div class="monthcell${isToday?' today':''}" style="${inMonth?'':'opacity:.4;'}" onclick="jumpToWeekFromMonth('${key}')">
         <div class="mc-head"><span>${WD_LABEL[i]} ${fmtMD(d)}</span>${themeBadge?`<span class="chip ${THEME_COLOR[themeBadge]||'gray'}" style="font-size:9px;padding:1px 6px;">${esc(themeBadge)}</span>`:''}</div>
@@ -3218,12 +3250,14 @@ function renderService(){
           <button class="${serviceView==='month'?'active':''}" onclick="setServiceView('month')">월간</button>
         </div>
         ${serviceCat==='snack' ? `<button class="btn no-print" onclick="window.print()">🖨 인쇄</button>` : ''}
-        <button class="btn no-print" onclick="setTab('settings')">⚙ 용역부 설정</button>
+        ${canViewTab('settings') ? `<button class="btn no-print" onclick="setTab('settings')">⚙ 용역부 설정</button>` : ''}
       </div>
     </div>`;
   if(serviceCat === 'snack'){
     const note = `<div class="card tight no-print screenonly" style="margin-bottom:14px;">
-      <p class="muted" style="font-size:11.8px;margin:0;">용역부에게 나가는 간식을 날짜별로 적습니다. 품목명·수량·단가를 그 자리에서 입력하고, 필요한 만큼 항목을 추가하면 됩니다. 여기에 적은 간식은 <b>재료구매(발주) 집계</b>에도 함께 잡힙니다. 인쇄물에는 금액이 나오지 않습니다.</p>
+      <p class="muted" style="font-size:11.8px;margin:0;">${isReadOnly()
+        ? '용역부에게 나가는 날짜별 간식 목록입니다. 🖨 인쇄 버튼으로 주간·월간 간식표를 출력할 수 있습니다.'
+        : '용역부에게 나가는 간식을 날짜별로 적습니다. 품목명·수량·단가를 그 자리에서 입력하고, 필요한 만큼 항목을 추가하면 됩니다. 여기에 적은 간식은 <b>재료구매(발주) 집계</b>에도 함께 잡힙니다. 인쇄물에는 금액이 나오지 않습니다.'}</p>
     </div>`;
     return header + note + (serviceView==='month' ? renderServiceSnackMonth() : renderServiceSnackWeek());
   }
@@ -3343,7 +3377,9 @@ function renderServiceSnackWeek(){
     const key = toKey(d);
     const items = snackItemsOf(key);
     const isToday = sameDate(d, today);
-    const rows = items.map((it,idx)=>{
+    // 보기 전용 계정에는 입력칸·금액 없이 "품목 ×수량"만 보여준다
+    const roRows = items.map(it=>`<div class="snackread"><span class="sr-rname">${esc(snackItemName(it))||'<span class="muted">이름 없음</span>'}</span><span class="sr-rqty">×${it.qty}${esc(snackItemUnit(it))}</span></div>`).join('');
+    const rows = isReadOnly() ? roRows : items.map((it,idx)=>{
       const L = snackLinkOf(it);
       const linked = L.kind !== 'free';
       const priceField = linked
@@ -3370,19 +3406,19 @@ function renderServiceSnackWeek(){
       <div class="dhead"><span class="d">${WD_LABEL[i]} · ${fmtMD(d)}</span>${items.length?`<span class="chip gray" style="font-size:10px;">${items.length}품목</span>`:''}</div>
       ${items.length ? `<div class="stack" style="gap:6px;">${rows}</div>` : `<div class="muted" style="font-size:12px;padding:6px 0;">간식 없음</div>`}
       <button class="btn small no-print" style="align-self:flex-start;" onclick="addSnackItem('${key}')">+ 간식 추가</button>
-      <div class="daycost printhide"><span class="muted">${items.length}품목</span><b class="num">${fmtWon(snackDayTotal(key))}</b></div>
+      ${money(`<div class="daycost printhide"><span class="muted">${items.length}품목</span><b class="num">${fmtWon(snackDayTotal(key))}</b></div>`)}
     </div>`;
   }).join('');
   const weekTotal = dates.reduce((s,d)=>s+snackDayTotal(toKey(d)), 0);
-  const summary = `<div class="card tight screenonly printhide" style="margin-bottom:14px;">
+  const summary = money(`<div class="card tight screenonly printhide" style="margin-bottom:14px;">
     <div class="flex-between" style="flex-wrap:wrap;gap:10px;">
       <div class="section-title" style="margin-bottom:0;">이번 주(${fmtMD(dates[0])}~${fmtMD(dates[4])}) 간식 금액</div>
       <div class="chip-row"><span class="chip green">주간 합계 <b class="num">${fmtWon(weekTotal)}</b></span></div>
     </div>
-  </div>`;
+  </div>`);
   return summary + renderSnackPrintWeek(dates)
     + `<div class="daygrid screenonly">${cards}</div>
-    <p class="muted screenonly" style="margin-top:14px;font-size:12px;">※ 품목을 <b>재료·상품 관리</b>나 <b>메뉴 관리</b>에 등록된 것으로 고르면 단가를 자동으로 가져옵니다(등록처에서 가격을 고치면 여기도 함께 바뀝니다). 목록에 없는 것은 "직접 입력"으로 두고 단가를 적으면 됩니다. 수량은 인원수와 별개로 직접 넣습니다(기본값은 용역부 인원).</p>`;
+    <p class="muted screenonly" style="margin-top:14px;font-size:12px;">${isReadOnly() ? '' : '※ 품목을 <b>재료·상품 관리</b>나 <b>메뉴 관리</b>에 등록된 것으로 고르면 단가를 자동으로 가져옵니다(등록처에서 가격을 고치면 여기도 함께 바뀝니다). 목록에 없는 것은 "직접 입력"으로 두고 단가를 적으면 됩니다. 수량은 인원수와 별개로 직접 넣습니다(기본값은 용역부 인원).'}</p>`;
 }
 function renderServiceSnackMonth(){
   const first = new Date(serviceMonth.y, serviceMonth.m, 1);
@@ -3404,17 +3440,17 @@ function renderServiceSnackMonth(){
       return `<div class="monthcell${sameDate(d,today)?' today':''}" style="${inMonth?'':'opacity:.4;'}">
         <div class="mc-head"><span>${WD_LABEL[i]} ${fmtMD(d)}</span></div>
         <div class="mc-body">${inMonth?chips:''}</div>
-        ${inMonth?`<div class="mc-foot no-print"><button class="btn small" onclick="addSnackItemByName('${key}')">+ 추가</button><span class="num printhide">${items.length?fmtWon(snackDayTotal(key)):''}</span></div>`:''}
+        ${inMonth?`<div class="mc-foot no-print"><button class="btn small" onclick="addSnackItemByName('${key}')">+ 추가</button>${money(`<span class="num printhide">${items.length?fmtWon(snackDayTotal(key)):''}</span>`)}</div>`:''}
       </div>`;
     }).join('');
     return `<div class="monthgrid">${cells}</div>`;
   }).join('');
-  const summary = `<div class="card tight screenonly printhide" style="margin-bottom:14px;">
+  const summary = money(`<div class="card tight screenonly printhide" style="margin-bottom:14px;">
     <div class="flex-between" style="flex-wrap:wrap;gap:10px;">
       <div class="section-title" style="margin-bottom:0;">${serviceMonth.y}년 ${serviceMonth.m+1}월 간식 금액</div>
       <div class="chip-row"><span class="chip green">월 합계 <b class="num">${fmtWon(monthTotal)}</b></span></div>
     </div>
-  </div>`;
+  </div>`);
   return summary + renderSnackPrintMonth(weeks)
     + `<div class="monthweekrow screenonly">${rows}</div>
     <p class="muted screenonly" style="font-size:12px;margin-top:6px;">※ 달력 칸의 "+ 추가"로 이름만 먼저 넣고, 수량·단가는 주간 보기에서 다듬으면 됩니다.</p>`;
@@ -3473,7 +3509,7 @@ function renderServiceWeek(){
       return `<div class="daycard${isToday?' today':''}">
         <div class="dhead"><span class="d">${WD_LABEL[i]} · ${fmtMD(d)}</span><span class="chip gray" style="font-size:10.5px;">도시락 없음</span></div>
         <div class="muted" style="font-size:12px;">사먹는 날 — 용역부 도시락을 준비하지 않습니다.</div>
-        <div class="daycost"><span class="muted">1인 ${fmtWon(0)}</span><b class="num">${fmtWon(0)}</b></div>
+        ${money(`<div class="daycost"><span class="muted">1인 ${fmtWon(0)}</span><b class="num">${fmtWon(0)}</b></div>`)}
       </div>`;
     }
     const rec = serviceMealFor(key);
@@ -3510,10 +3546,10 @@ function renderServiceWeek(){
         <div class="no-print">${serviceMenuPicker(key,'간식',rec.snackIds||[])}</div>
       </div>
       <input class="memo-input no-print" value="${esc(rec.memo||'')}" placeholder="메모" onchange="updateServiceMemo('${key}',this.value)">
-      <div style="font-size:10.8px;color:var(--ink-soft);border-top:1px dashed var(--border);padding-top:6px;line-height:1.7;">
+      ${money(`<div style="font-size:10.8px;color:var(--ink-soft);border-top:1px dashed var(--border);padding-top:6px;line-height:1.7;">
         기본 ${fmtWon(c.base)} · 후식 ${fmtWon(c.dessert)} · 간식 ${fmtWon(c.snack)}<br>용기 ${fmtWon(c.pack)} · 발열팩 ${fmtWon(c.heat)}
       </div>
-      <div class="daycost"><span class="muted">1인 ${fmtWon(c.perPerson)} × ${hc}명</span><b class="num">${fmtWon(c.total)}</b></div>
+      <div class="daycost"><span class="muted">1인 ${fmtWon(c.perPerson)} × ${hc}명</span><b class="num">${fmtWon(c.total)}</b></div>`)}
       <button class="btn small ghost no-print" style="align-self:flex-start;white-space:normal;text-align:left;padding-left:0;" title="이 날의 후식·간식 구성을 이번 주 다른 도시락 날에도 똑같이 적용합니다" onclick="applyServiceDayToWeek('${key}')">↻ 주간 일괄 적용</button>
     </div>`;
   }).join('');
@@ -3522,7 +3558,7 @@ function renderServiceWeek(){
   <div class="grid cols-3" style="margin-top:16px;">
     <div class="card stat-tile tight"><span class="label">이번 주 용역부 도시락</span><span class="value num">${lunchboxDays}일</span><span class="sub">월요일은 사먹는 날</span></div>
     <div class="card stat-tile tight"><span class="label">용역부 인원</span><span class="value num">${serviceHeadcount()}명</span><span class="sub">설정 · 거래처에서 변경</span></div>
-    <div class="card stat-tile tight"><span class="label">이번 주 용역부 총비용</span><span class="value num">${fmtWon(weekTotal)}</span><span class="sub">기본식사+후식+간식+포장비</span></div>
+    ${money(`<div class="card stat-tile tight"><span class="label">이번 주 용역부 총비용</span><span class="value num">${fmtWon(weekTotal)}</span><span class="sub">기본식사+후식+간식+포장비</span></div>`)}
   </div>
   <p class="muted" style="font-size:11.5px;margin-top:10px;">※ 후식·간식 항목은 메뉴 관리 탭의 "용역부 추가 메뉴 관리"에서 등록한 것만 선택할 수 있습니다. 식단표 탭의 "간식표(용역부)"는 예전부터 쓰던 자유 입력표로, 이 화면과는 별개로 그대로 유지됩니다.</p>`;
 }
@@ -3556,13 +3592,13 @@ function renderServiceMonth(){
       return `<div class="monthcell${isToday?' today':''}" style="${inMonth?'':'opacity:.4;'}" onclick="jumpToServiceWeekFromMonth('${key}')">
         <div class="mc-head"><span>${WD_LABEL[i]} ${fmtMD(d)}</span>${srcDate?`<span class="chip green" style="font-size:9px;padding:1px 6px;">← ${fmtMD(srcDate)}</span>`:''}</div>
         <div class="mc-body">${baseNames.length?esc(baseNames.join(', ')):'<span class="muted">영업부 식단 미편성</span>'}${extraCount?`<div style="margin-top:2px;">+ 추가 ${extraCount}개</div>`:''}</div>
-        <div class="mc-cost">1인 ${fmtWon(c.perPerson)} · 계 ${fmtWon(c.total)}</div>
+        ${money(`<div class="mc-cost">1인 ${fmtWon(c.perPerson)} · 계 ${fmtWon(c.total)}</div>`)}
       </div>`;
     }).join('');
     return `<div class="monthgrid">${cells}</div>`;
   }).join('');
   return `<div class="monthweekrow">${rows}</div>
-  <div class="card tight" style="margin-top:6px;"><div class="flex-between"><span class="muted" style="font-size:12px;">${serviceMonth.y}년 ${serviceMonth.m+1}월 용역부 총비용(해당 월 날짜 기준)</span><b class="num">${fmtWon(monthTotal)}</b></div></div>
+  ${money(`<div class="card tight" style="margin-top:6px;"><div class="flex-between"><span class="muted" style="font-size:12px;">${serviceMonth.y}년 ${serviceMonth.m+1}월 용역부 총비용(해당 월 날짜 기준)</span><b class="num">${fmtWon(monthTotal)}</b></div></div>`)}
   <p class="muted" style="font-size:12px;margin-top:6px;">※ 칸을 클릭하면 해당 주간 편집 화면으로 이동합니다. 각 칸의 "← 날짜"는 그 도시락이 어느 날 영업부 식단을 가져오는지 나타냅니다.</p>`;
 }
 
