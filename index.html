@@ -1044,10 +1044,13 @@ function applyPermissionGuards(){
     }
   });
 }
-/** 보기 전용 계정 화면 맨 위에 붙는 안내줄. */
+/** 보기 전용 안내줄 — 표시하지 않는다.
+ *  일반 계정 화면에는 애초에 수정 요소와 금액이 남아 있지 않아 안내가 필요 없고,
+ *  매 화면 상단에 띠가 붙으면 식단표를 보는 데 방해가 된다.
+ *  다시 띄우려면 아래 주석 처리된 한 줄을 되살리면 된다. */
 function readOnlyBanner(){
-  if(!isReadOnly()) return '';
-  return `<div class="ro-banner no-print">🔒 보기 전용 계정입니다 — 내용 수정과 금액 확인은 관리자에게 권한을 요청해 주세요.</div>`;
+  return '';
+  // return isReadOnly() ? `<div class="ro-banner no-print">🔒 보기 전용 계정입니다</div>` : '';
 }
 
 /* ---------- Firebase 로딩 ---------- */
