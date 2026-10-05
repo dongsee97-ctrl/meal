@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>구내식단 운영판</title><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>구내식단 운영판</title><style>:root{color-scheme:light dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14.5px/1.55 'Pretendard',-apple-system,BlinkMacSystemFont,'Malgun Gothic','맑은 고딕',sans-serif;letter-spacing:-0.005em;background:#eaf3fb;color:#12212e}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <script>
 /* 저장해둔 화면 밝기를 CSS보다 먼저 적용해 깜빡임을 막는다. 'auto'(기본)는 속성을 두지 않아
    기기의 다크모드 설정을 그대로 따라간다. */
@@ -6,41 +6,57 @@ try{ var _tm = localStorage.getItem('meal_app_theme_mode');
   if(_tm==='light' || _tm==='dark') document.documentElement.setAttribute('data-theme', _tm);
 }catch(e){}
 </script>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Pretendard — 화면 가독성을 위해 전체 글꼴을 하나로 통일한다.
+   글꼴 파일은 index.html 옆의 pretendard.woff2 를 먼저 쓰고, 그 파일이 없을 때만 CDN 에서 받는다.
+   (사내망에서 외부 CDN 이 막혀도 저장소에 함께 올린 파일로 동작한다) */
+@font-face{
+  font-family:'Pretendard';
+  font-weight:45 920;
+  font-style:normal;
+  font-display:swap;
+  src:url('pretendard.woff2') format('woff2-variations'),
+      url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/woff2/PretendardVariable.woff2') format('woff2-variations');
+}
+</style>
 <style>
   :root{
-    --bg:#eef1ea; --surface:#ffffff; --surface-2:#e4e9dd; --surface-3:#dbe2d2;
-    --ink:#1c2318; --ink-soft:#59634f; --ink-faint:#8a9280;
-    --border:#d3dac6; --border-soft:#e2e7d8;
-    --accent:#2e6b4f; --accent-ink:#ffffff; --accent-soft:#dbeadf; --accent-strong:#204d39;
-    --amber:#a8672a; --amber-soft:#f2e2cd;
-    --danger:#ac4433; --danger-soft:#f4ddd7;
-    --shadow: 0 1px 2px rgba(28,35,24,.06), 0 6px 20px -10px rgba(28,35,24,.18);
+    /* 청량한 파랑·흰색 계열 — 배경은 아주 옅은 하늘빛, 카드는 순백으로 대비를 준다 */
+    --bg:#eaf3fb; --surface:#ffffff; --surface-2:#e1edf8; --surface-3:#d2e4f4;
+    --ink:#12212e; --ink-soft:#496076; --ink-faint:#5b7284;
+    --border:#6b9ac6; --border-soft:#98bddd;
+    --bw:1.5px;   /* 테두리 굵기 — 한 곳만 고치면 카드·입력칸·구분선이 함께 바뀐다 */
+    --accent:#0f6fc4; --accent-ink:#ffffff; --accent-soft:#d9eafb; --accent-strong:#0a5496;
+    --amber:#8f5210; --amber-soft:#fbe7cf;
+    --danger:#a82c2c; --danger-soft:#fadddd;
+    --shadow: 0 1px 2px rgba(18,33,46,.06), 0 6px 20px -10px rgba(18,33,46,.20);
+    --font: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', sans-serif;
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
-      --bg:#12160f; --surface:#1a2016; --surface-2:#222b1c; --surface-3:#2b3524;
-      --ink:#e8ecdf; --ink-soft:#aab39c; --ink-faint:#77806a;
-      --border:#333e2a; --border-soft:#293120;
-      --accent:#6fbe93; --accent-ink:#0c1a10; --accent-soft:#213a29; --accent-strong:#8ad4ac;
-      --amber:#dba05b; --amber-soft:#3a2c18;
-      --danger:#df8b7a; --danger-soft:#3c221c;
-      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -10px rgba(0,0,0,.5);
+      --bg:#0b141d; --surface:#122130; --surface-2:#1a2d3f; --surface-3:#23394d;
+      --ink:#e3eef8; --ink-soft:#9db4c8; --ink-faint:#8099ad;
+      --border:#44688c; --border-soft:#2e4c68;
+      --accent:#4fb0f0; --accent-ink:#06121c; --accent-soft:#15334d; --accent-strong:#7fc8f7;
+      --amber:#e0a35c; --amber-soft:#3a2b17;
+      --danger:#e88b8b; --danger-soft:#3d1f1f;
+      --shadow: 0 1px 2px rgba(0,0,0,.35), 0 8px 24px -10px rgba(0,0,0,.55);
     }
   }
   :root[data-theme="dark"]{
-    --bg:#12160f; --surface:#1a2016; --surface-2:#222b1c; --surface-3:#2b3524;
-    --ink:#e8ecdf; --ink-soft:#aab39c; --ink-faint:#77806a;
-    --border:#333e2a; --border-soft:#293120;
-    --accent:#6fbe93; --accent-ink:#0c1a10; --accent-soft:#213a29; --accent-strong:#8ad4ac;
-    --amber:#dba05b; --amber-soft:#3a2c18;
-    --danger:#df8b7a; --danger-soft:#3c221c;
-    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -10px rgba(0,0,0,.5);
+    --bg:#0b141d; --surface:#122130; --surface-2:#1a2d3f; --surface-3:#23394d;
+    --ink:#e3eef8; --ink-soft:#9db4c8; --ink-faint:#8099ad;
+    --border:#44688c; --border-soft:#2e4c68;
+    --accent:#4fb0f0; --accent-ink:#06121c; --accent-soft:#15334d; --accent-strong:#7fc8f7;
+    --amber:#e0a35c; --amber-soft:#3a2b17;
+    --danger:#e88b8b; --danger-soft:#3d1f1f;
+    --shadow: 0 1px 2px rgba(0,0,0,.35), 0 8px 24px -10px rgba(0,0,0,.55);
   }
   *{box-sizing:border-box;}
-  body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans KR",-apple-system,sans-serif;font-size:14px;line-height:1.5;}
-  .num{font-family:"IBM Plex Mono","IBM Plex Sans KR",monospace;font-variant-numeric:tabular-nums;}
-  h1,h2,h3{text-wrap:balance;margin:0;font-family:"IBM Plex Sans KR",sans-serif;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:14.5px;line-height:1.55;letter-spacing:-0.005em;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
+  /* 숫자는 글꼴은 같게 두되 자리폭을 고정해(tabular-nums) 금액이 세로로 가지런히 맞게 한다 */
+  .num{font-family:var(--font);font-variant-numeric:tabular-nums;letter-spacing:0;}
+  h1,h2,h3{text-wrap:balance;margin:0;font-family:var(--font);}
   button{font-family:inherit;font-size:inherit;}
   input,select,textarea{font-family:inherit;font-size:inherit;color:inherit;}
   ::selection{background:var(--accent-soft);}
@@ -48,7 +64,7 @@ try{ var _tm = localStorage.getItem('meal_app_theme_mode');
   #app{display:flex;min-height:100vh;}
 
   /* ---------- Sidebar ---------- */
-  #sidebar{width:238px;flex:none;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:18px 12px;gap:2px;position:sticky;top:0;height:100vh;overflow-y:auto;}
+  #sidebar{width:238px;flex:none;background:var(--surface);border-right:var(--bw) solid var(--border);display:flex;flex-direction:column;padding:18px 12px;gap:2px;position:sticky;top:0;height:100vh;overflow-y:auto;}
   .brand{display:flex;align-items:center;gap:9px;padding:6px 8px 16px;}
   .brand-mark{width:30px;height:30px;border-radius:8px;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex:none;}
   .brand-text{display:flex;flex-direction:column;line-height:1.25;}
@@ -76,7 +92,7 @@ try{ var _tm = localStorage.getItem('meal_app_theme_mode');
     position:relative;
     padding:11px 9px 10px 13px;
     margin:7px 0;
-    border:1px solid var(--border);
+    border:var(--bw) solid var(--border);
     border-radius:12px;
     background:var(--surface);
     gap:2px;
@@ -95,19 +111,21 @@ try{ var _tm = localStorage.getItem('meal_app_theme_mode');
   .navgroup-dept .navbtn.nav-primary{padding:9px 9px;margin-bottom:0;}
   .dept-sales  {--dept-bar:var(--accent);--dept-ink:var(--accent-strong);}
   .dept-service{--dept-bar:var(--amber); --dept-ink:var(--amber);}
+  .dept-manage {--dept-bar:var(--ink-soft);  --dept-ink:var(--ink-soft);}
+  .dept-admin  {--dept-bar:var(--ink-faint); --dept-ink:var(--ink-faint);}
   .sidebar-foot{margin-top:auto;padding:10px 8px 4px;font-size:11px;color:var(--ink-faint);border-top:1px solid var(--border-soft);}
   /* 화면 밝기(테마) 선택 — 자동은 기기 설정을 따라가고, 밝게/어둡게는 이 브라우저에 기억된다 */
   .sidebar-bottom{margin-top:auto;}
   .sidebar-bottom .sidebar-foot{margin-top:0;}
-  .theme-toggle{display:flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin:0 4px;}
+  .theme-toggle{display:flex;border:var(--bw) solid var(--border);border-radius:8px;overflow:hidden;margin:0 4px;}
   .theme-toggle button{flex:1;border:none;background:var(--surface);color:var(--ink-soft);padding:5px 0;font-size:10.5px;font-weight:600;cursor:pointer;}
-  .theme-toggle button + button{border-left:1px solid var(--border);}
+  .theme-toggle button + button{border-left:var(--bw) solid var(--border);}
   .theme-toggle button.active{background:var(--accent);color:var(--accent-ink);}
   .theme-label{padding:0 6px 4px;font-size:10px;color:var(--ink-faint);}
 
   /* ---------- Main ---------- */
   #main{flex:1;min-width:0;display:flex;flex-direction:column;}
-  #topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 28px;border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:5;flex-wrap:wrap;}
+  #topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 28px;border-bottom:var(--bw) solid var(--border);background:var(--surface);position:sticky;top:0;z-index:5;flex-wrap:wrap;}
   #topbar .title-block h1{font-size:19px;font-weight:700;}
   #topbar .title-block p{margin:2px 0 0;color:var(--ink-soft);font-size:12.5px;}
   .chip{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap;}
@@ -129,18 +147,18 @@ try{ var _tm = localStorage.getItem('meal_app_theme_mode');
   .grid.cols-2{grid-template-columns:repeat(2,1fr);}
   @media (max-width:900px){.grid.cols-4{grid-template-columns:repeat(2,1fr);} .grid.cols-3{grid-template-columns:repeat(2,1fr);}}
 
-  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;box-shadow:var(--shadow);}
+  .card{background:var(--surface);border:var(--bw) solid var(--border);border-radius:12px;padding:16px;box-shadow:var(--shadow);}
   .card.tight{padding:14px;}
   .stat-tile{display:flex;flex-direction:column;gap:6px;}
   .stat-tile .label{font-size:12px;color:var(--ink-soft);font-weight:500;}
-  .stat-tile .value{font-size:22px;font-weight:700;font-family:"IBM Plex Mono",monospace;}
+  .stat-tile .value{font-size:22px;font-weight:700;font-family:var(--font);font-variant-numeric:tabular-nums;letter-spacing:0;}
   .stat-tile .sub{font-size:11.5px;color:var(--ink-faint);}
 
   .section-title{font-size:13.5px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
   .section-title .hint{font-weight:400;color:var(--ink-faint);font-size:11.5px;}
 
   /* ---------- Buttons ---------- */
-  .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--ink);cursor:pointer;font-weight:600;font-size:12.8px;transition:filter .1s,background .1s;white-space:nowrap;}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;border:var(--bw) solid var(--border);background:var(--surface);color:var(--ink);cursor:pointer;font-weight:600;font-size:12.8px;transition:filter .1s,background .1s;white-space:nowrap;}
   .btn:hover{filter:brightness(0.97);}
   :root[data-theme="dark"] .btn:hover, @media (prefers-color-scheme:dark){.btn:hover{filter:brightness(1.12);}}
   .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);}
@@ -148,30 +166,30 @@ try{ var _tm = localStorage.getItem('meal_app_theme_mode');
   .btn.small{padding:5px 10px;font-size:11.5px;border-radius:7px;}
   .btn.danger{color:var(--danger);}
   .btn:disabled{opacity:.45;cursor:not-allowed;}
-  .iconbtn{width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;border-radius:7px;border:1px solid var(--border);background:var(--surface);color:var(--ink-soft);cursor:pointer;}
+  .iconbtn{width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;border-radius:7px;border:var(--bw) solid var(--border);background:var(--surface);color:var(--ink-soft);cursor:pointer;}
   .iconbtn:hover{background:var(--surface-2);}
 
   /* ---------- Forms ---------- */
   label.field{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--ink-soft);font-weight:600;}
-  input[type=text],input[type=number],input[type=date],select,textarea{padding:7px 9px;border:1px solid var(--border);border-radius:7px;background:var(--surface);color:var(--ink);}
+  input[type=text],input[type=number],input[type=date],select,textarea{padding:7px 9px;border:var(--bw) solid var(--border);border-radius:7px;background:var(--surface);color:var(--ink);}
   input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px;}
   select.slot-select{width:100%;}
   .inline-form{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;}
 
   /* ---------- Table ---------- */
-  .twrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px;}
+  .twrap{overflow-x:auto;border:var(--bw) solid var(--border);border-radius:10px;}
   table{width:100%;border-collapse:collapse;font-size:13px;}
   th,td{padding:9px 11px;text-align:left;border-bottom:1px solid var(--border-soft);white-space:nowrap;}
   thead th{background:var(--surface-2);font-size:11.5px;color:var(--ink-soft);font-weight:600;text-transform:uppercase;letter-spacing:.03em;}
   tbody tr:last-child td{border-bottom:none;}
   tbody tr:hover{background:var(--surface-2);}
   td.wrap,th.wrap{white-space:normal;}
-  td.num,th.num{text-align:right;font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;}
+  td.num,th.num{text-align:right;font-family:var(--font);font-variant-numeric:tabular-nums;letter-spacing:0;}
 
   /* ---------- Meal plan week ---------- */
   .weeknav{display:flex;align-items:center;gap:10px;}
   .weeknav .range{font-weight:700;font-size:14px;min-width:150px;text-align:center;}
-  .cat-toggle{display:inline-flex;border:1px solid var(--border);border-radius:9px;overflow:hidden;}
+  .cat-toggle{display:inline-flex;border:var(--bw) solid var(--border);border-radius:9px;overflow:hidden;}
   .cat-toggle button{border:none;background:var(--surface);color:var(--ink-soft);padding:7px 16px;font-weight:600;font-size:12.8px;cursor:pointer;}
   .cat-toggle button.active{background:var(--accent);color:var(--accent-ink);}
 
@@ -179,7 +197,7 @@ try{ var _tm = localStorage.getItem('meal_app_theme_mode');
   .daycard{min-width:0;}
   .daycard input,.daycard select{min-width:0;max-width:100%;}
   @media (max-width:980px){.daygrid{grid-template-columns:1fr;}}
-  .daycard{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:13px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:9px;}
+  .daycard{background:var(--surface);border:var(--bw) solid var(--border);border-radius:12px;padding:13px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:9px;}
   .daycard.today{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent), var(--shadow);}
   .daycard .dhead{display:flex;align-items:center;justify-content:space-between;}
   .daycard .dhead .d{font-weight:700;font-size:13.5px;}
@@ -191,7 +209,7 @@ try{ var _tm = localStorage.getItem('meal_app_theme_mode');
   .daybreak{margin-top:auto;display:flex;flex-wrap:wrap;gap:3px 10px;font-size:10.5px;color:var(--ink-faint);line-height:1.4;}
   .daybreak b{font-size:11px;color:var(--ink-soft);font-weight:600;}
   .daybreak + .daycost{margin-top:5px;padding-top:5px;}
-  .daycost b{font-family:"IBM Plex Mono",monospace;font-size:14px;}
+  .daycost b{font-family:var(--font);font-size:14.5px;font-variant-numeric:tabular-nums;letter-spacing:0;}
   .delivery-box{background:var(--amber-soft);border-radius:9px;padding:12px;display:flex;flex-direction:column;gap:8px;}
   .memo-input{border:1px dashed var(--border);background:transparent;border-radius:6px;padding:5px 7px;font-size:11.5px;width:100%;}
 
@@ -218,22 +236,24 @@ try{ var _tm = localStorage.getItem('meal_app_theme_mode');
   /* ---------- 월간 캘린더 보기 ---------- */
   .monthgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
   @media (max-width:900px){.monthgrid{grid-template-columns:1fr;}}
-  .monthcell{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:9px;display:flex;flex-direction:column;gap:5px;cursor:pointer;transition:border-color .12s;}
+  .monthcell{background:var(--surface);border:var(--bw) solid var(--border);border-radius:10px;padding:9px;display:flex;flex-direction:column;gap:5px;cursor:pointer;transition:border-color .12s;}
   .monthcell:hover{border-color:var(--accent);}
   .monthcell.today{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);}
   .monthcell .mc-head{display:flex;justify-content:space-between;font-size:11px;font-weight:700;}
   .monthcell .mc-body{font-size:11px;color:var(--ink-soft);line-height:1.5;}
   /* 월간 보기 — 메뉴를 쉼표로 잇지 않고 분류(밥·국·메인·반찬)별로 한 줄씩 끊어 보여준다.
    * 왼쪽 색막대는 인쇄물과 같은 분류색을 써서, 화면과 인쇄물의 색이 서로 어긋나지 않게 한다. */
-  .monthcell .mc-line{display:flex;align-items:baseline;gap:6px;padding:1px 0 1px 7px;
-    border-left:3px solid var(--border);border-radius:1px;margin-bottom:3px;line-height:1.35;}
-  .monthcell .mc-cat{flex:none;min-width:30px;font-size:9.5px;font-weight:700;letter-spacing:.02em;color:var(--ink-faint);}
-  .monthcell .mc-menu{font-size:11.5px;color:var(--ink);font-weight:500;word-break:keep-all;}
+  /* 월간 칸의 메뉴 줄 — 분류 이름 없이 메뉴명만, 메인만 굵게+밑줄로 부각.
+   * .gap 은 "밥~서브메인" 묶음과 "일반 반찬" 묶음 사이에 붙어 한 박자 쉬어준다. */
+  .monthcell .mline{font-size:11.8px;line-height:1.5;color:var(--ink);text-align:center;word-break:keep-all;}
+  .monthcell .mline.main{font-weight:700;color:var(--accent-strong);
+    text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:3px;font-size:12.5px;}
+  .monthcell .mline.gap{margin-top:7px;padding-top:6px;border-top:1px dashed var(--border-soft);}
   .monthcell .mc-memo{margin-top:2px;padding-top:3px;border-top:1px dashed var(--border-soft);
     font-size:10.5px;color:var(--ink-faint);word-break:keep-all;}
-  .monthcell .mc-cost{margin-top:auto;font-size:11px;font-family:"IBM Plex Mono",monospace;font-weight:600;}
+  .monthcell .mc-cost{margin-top:auto;font-size:11.5px;font-family:var(--font);font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:0;}
   .monthweekrow{display:flex;flex-direction:column;gap:6px;margin-bottom:10px;}
-  .view-toggle{display:inline-flex;border:1px solid var(--border);border-radius:9px;overflow:hidden;}
+  .view-toggle{display:inline-flex;border:var(--bw) solid var(--border);border-radius:9px;overflow:hidden;}
   .view-toggle button{border:none;background:var(--surface);color:var(--ink-soft);padding:7px 14px;font-weight:600;font-size:12.8px;cursor:pointer;}
   .view-toggle button.active{background:var(--accent);color:var(--accent-ink);}
 
@@ -256,7 +276,7 @@ try{ var _tm = localStorage.getItem('meal_app_theme_mode');
   a.linklike{color:var(--accent-strong);cursor:pointer;font-weight:600;text-decoration:none;}
   a.linklike:hover{text-decoration:underline;}
   .barchart{width:100%;height:auto;}
-  .barchart text{fill:var(--ink-soft);font-family:"IBM Plex Mono",monospace;}
+  .barchart text{fill:var(--ink-soft);font-family:var(--font);font-variant-numeric:tabular-nums;}
   .barchart .gridline{stroke:var(--border-soft);stroke-width:1;}
   .barchart .bar{fill:var(--accent);}
   .barchart .bar.over{fill:var(--danger);}
@@ -296,6 +316,10 @@ try{ var _tm = localStorage.getItem('meal_app_theme_mode');
   .pmonth thead th{background:#efeee9;font-size:12px;text-align:center;}
   .pmonth .pm-date{font-size:10.5px;font-weight:700;color:#33332e;margin-bottom:3px;}
   .pmonth .pm-item{font-size:11px;line-height:1.45;border-left:3px solid #b9b9b4;padding-left:5px;margin-bottom:2px;}
+  /* 인쇄용 메뉴 줄 — 화면과 같은 순서·강조로 맞춘다(분류 이름 없이 메뉴명만) */
+  .pmonth .pm-line{font-size:11px;line-height:1.5;text-align:center;color:#12212e;}
+  .pmonth .pm-line.main{font-weight:800;text-decoration:underline;text-decoration-thickness:1.2px;text-underline-offset:2.5px;font-size:11.5px;}
+  .pmonth .pm-line.gap{margin-top:5px;padding-top:4px;border-top:1px dotted #b9b9b4;}
   .pmonth .pm-item.pk0{border-left-color:#9a9a93;background:#f5f5f3;}
   .pmonth .pm-item.pk1{border-left-color:#3f8a83;background:#edf5f5;}
   .pmonth .pm-item.pk2{border-left-color:#4e8d5e;background:#eef6ef;}
@@ -306,10 +330,80 @@ try{ var _tm = localStorage.getItem('meal_app_theme_mode');
   .pmonth .pm-item.pk7{border-left-color:#b25070;background:#fbeef1;}
   .pmonth .pm-out{background:#fafaf8;}
 
+  /* ===== 인쇄용 주간 식단표(카드형) =====
+   * 예전에는 분류를 행으로 세운 표였는데, 칸이 비는 요일이 많아 엑셀 표처럼 딱딱해 보였다.
+   * 요일별 카드 안에 메뉴를 흐르듯 세우고(분류 이름 없이), 그날의 메인만 눈에 띄게 강조한다.
+   * 아이콘은 외부 이미지가 아니라 파일 안에 그린 SVG라 인터넷 없이도 그대로 인쇄된다. */
+  .pweek-wrap{position:relative;border:1.5px solid #e6dcc6;border-radius:14px;padding:14px 15px 15px;
+    background-color:#fffdf8;
+    background-image:radial-gradient(#f0e6d0 1.1px, transparent 1.1px);
+    background-size:14px 14px;}
+  .pweek-deco{position:absolute;left:15px;bottom:9px;display:flex;gap:8px;opacity:.45;}
+  .pweek-deco svg{width:26px;height:26px;display:block;}
+  .pweek-badge{width:30px;height:30px;flex:0 0 auto;}
+  .pweek-ttlrow{display:flex;align-items:center;gap:9px;}
+  .pweek-wave{display:block;width:100%;height:7px;margin:0 0 10px;}
+  .pweek-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin:0 0 11px;}
+  .pweek-ttl{font-size:21px;font-weight:800;color:#3d2f18;letter-spacing:-.01em;line-height:1.2;margin:0;}
+  .pweek-ttl em{font-style:normal;color:#c2702a;}
+  .pweek-sub{font-size:11.5px;color:#8a7a5e;margin-top:3px;}
+  .pweek-brand{font-size:11px;color:#8a7a5e;text-align:right;line-height:1.5;white-space:nowrap;}
+  .pweek-brand b{display:block;font-size:12.5px;color:#5c4a2a;font-weight:800;}
+  .pweek{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;}
+  .pwday{border:1.4px solid #e2d6bc;border-radius:11px;background:#fff;overflow:hidden;display:flex;flex-direction:column;}
+  .pwday-b{background:#fff;}
+  .pwday-h{padding:7px 6px 6px;text-align:center;border-bottom:1.4px solid #e8dec8;}
+  .pwday-wd{font-size:13.5px;font-weight:800;letter-spacing:.02em;}
+  .pwday-dt{font-size:10px;margin-top:1px;opacity:.78;}
+  .pwday-th{display:inline-block;margin-top:4px;font-size:9.5px;font-weight:700;padding:1.5px 7px;border-radius:99px;background:rgba(255,255,255,.72);border:1px solid rgba(0,0,0,.08);}
+  .pwday-b{padding:8px 7px 9px;flex:1;}
+  /* 요일별 머리 색 — 5일이 서로 구분되게 따뜻한 계열로 돌린다 */
+  .pwd0 .pwday-h{background:#fdeede;color:#8a4a13;}
+  .pwd1 .pwday-h{background:#eaf3e2;color:#3d6128;}
+  .pwd2 .pwday-h{background:#e4f0f4;color:#1f5366;}
+  .pwd3 .pwday-h{background:#f4ecf7;color:#5a3870;}
+  .pwd4 .pwday-h{background:#fdeceb;color:#8d3733;}
+  /* 메뉴 한 줄 — 아이콘 + 이름 */
+  .pw-line{display:flex;align-items:center;gap:5px;font-size:11.8px;line-height:1.42;color:#2c2518;padding:2.5px 0;}
+  .pw-line .ic{flex:0 0 auto;width:14px;height:14px;display:block;}
+  .pw-line .nm{flex:1;min-width:0;word-break:keep-all;}
+  /* 그날의 메인 — 분류 이름을 지운 대신 이것만 강조해서 한눈에 들어오게 한다 */
+  .pw-line.main{background:#fff4e2;border:1.2px solid #efcf9c;border-radius:7px;padding:4px 6px;margin:1px 0 3px;}
+  .pw-line.main .nm{font-size:13px;font-weight:800;color:#8a4a13;}
+  .pw-line.main .ic{width:16px;height:16px;}
+  .pw-line.gap{margin-top:5px;padding-top:5px;border-top:1px dashed #e0d5bd;}
+  .pw-empty{font-size:11px;color:#b3a98f;text-align:center;padding:14px 0;}
+  .pw-deliv{text-align:center;font-size:12.5px;font-weight:800;color:#8a4a13;padding:10px 0;}
+  .pw-memo{margin-top:7px;padding-top:6px;border-top:1px dashed #e0d5bd;font-size:10px;color:#7a6c50;line-height:1.45;word-break:keep-all;}
+  .pweek-foot{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:11px;font-size:10.5px;color:#8a7a5e;}
+  /* ===== 인쇄용 월간(달력형) — 주간 카드와 같은 결로 맞춘다 ===== */
+  .pmon{width:100%;border-collapse:separate;border-spacing:6px;table-layout:fixed;}
+  .pmon thead th{font-size:12px;font-weight:800;padding:5px 0 4px;border-radius:7px;}
+  .pmon thead th.mh0{background:#fdeede;color:#8a4a13;}
+  .pmon thead th.mh1{background:#eaf3e2;color:#3d6128;}
+  .pmon thead th.mh2{background:#e4f0f4;color:#1f5366;}
+  .pmon thead th.mh3{background:#f4ecf7;color:#5a3870;}
+  .pmon thead th.mh4{background:#fdeceb;color:#8d3733;}
+  .pmon td{vertical-align:top;border:1.2px solid #e4d9c0;border-radius:9px;background:#fff;padding:5px 5px 6px;}
+  .pmon td.pmon-out{background:#faf7ef;border-color:#ece4d2;}
+  .pmon .pmon-d{font-size:10px;font-weight:800;color:#8a7a5e;text-align:center;padding-bottom:3px;margin-bottom:3px;border-bottom:1px dashed #ebe0c9;}
+  .pmon .pw-line{font-size:10.2px;line-height:1.3;padding:1.4px 0;gap:3.5px;}
+  .pmon .pw-line .ic{width:11px;height:11px;}
+  .pmon .pw-line.main{padding:2.5px 4px;margin:1.5px 0 2px;border-radius:5px;}
+  .pmon .pw-line.main .nm{font-size:10.8px;}
+  .pmon .pw-line.main .ic{width:12.5px;height:12.5px;}
+  .pmon .pw-line.gap{margin-top:3px;padding-top:3px;}
+  .pmon .pw-empty{font-size:10px;padding:5px 0;}
+  .pmon .pw-deliv{font-size:10.5px;padding:4px 0;}
+  .pmon .pw-memo{font-size:9px;margin-top:4px;padding-top:3px;}
+  .pmon .pmon-qty{color:#8a7a5e;font-weight:600;}
+  .pw-line .qty{color:#8a7a5e;font-size:.88em;margin-left:2px;white-space:nowrap;}
+  .pweek-foot .dot{width:4px;height:4px;border-radius:50%;background:#d8c9a6;display:inline-block;}
+
   @media print{
     #sidebar,#topbar,.no-print{display:none !important;}
     #view{max-width:none;padding:0;}
-    body{background:#fff;color:#141413;}
+    body{background:#fff;color:#12212e;}
     .card{box-shadow:none;}
     .screenonly,.printhide{display:none !important;}
     .printonly{display:block !important;}
@@ -317,6 +411,52 @@ try{ var _tm = localStorage.getItem('meal_app_theme_mode');
     *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;}
     .printsheet{page-break-inside:avoid;}
     .pmonth tr{page-break-inside:avoid;}
+    /* 주간 식단표는 A4 가로 한 장을 꽉 채우도록 늘린다(위쪽에만 몰려 찍히지 않게). */
+    .pweek-wrap{page-break-inside:avoid;box-sizing:border-box;}
+    .pwrap-week{min-height:183mm;display:flex;flex-direction:column;}
+    .pweek{flex:1 1 auto;align-items:stretch;}
+    .pwday{page-break-inside:avoid;height:100%;}
+    .pweek-ttl{font-size:25px;}
+    .pweek-sub{font-size:13px;}
+    .pweek-brand{font-size:12px;} .pweek-brand b{font-size:14px;}
+    .pweek-badge{width:36px;height:36px;}
+    .pwday-h{padding:10px 7px 9px;}
+    .pwday-wd{font-size:16px;} .pwday-dt{font-size:11.5px;} .pwday-th{font-size:11px;padding:2px 9px;}
+    .pwday-b{padding:11px 9px 12px;}
+    .pw-line{font-size:13.5px;padding:5.5px 0;gap:7px;}
+    .pw-line .ic{width:17px;height:17px;}
+    .pw-line.main .nm{font-size:15px;}
+    .pw-line.main .ic{width:19px;height:19px;}
+    .pw-line.main{padding:8px 9px;margin:3px 0 5px;}
+    .pw-line.gap{margin-top:8px;padding-top:8px;}
+    .pweek-deco svg{width:30px;height:30px;}
+    .pweek-foot{font-size:12px;}
+    .pw-memo{font-size:11px;}
+    /* 월간은 한 달치(최대 5주)가 한 장에 들어가야 하므로 주간보다 촘촘하게 */
+    .pwrap-month{padding:7px 9px 7px;}
+    .pmon{border-spacing:2px;}
+    .pmon tr{page-break-inside:avoid;}
+    .pmon thead th{font-size:10.5px;padding:3px 0 2.5px;border-radius:5px;}
+    .pmon td{padding:2.5px 3.5px 3px;border-radius:6px;}
+    .pmon .pmon-d{font-size:8.8px;padding-bottom:1.5px;margin-bottom:1.5px;}
+    .pmon .pw-line{font-size:8.8px;line-height:1.18;padding:.3px 0;gap:2.5px;}
+    .pmon .pw-line .ic{width:9px;height:9px;}
+    .pmon .pw-line.main{padding:1.5px 3px;margin:.5px 0 1px;border-radius:4px;}
+    .pmon .pw-line.main .nm{font-size:9.3px;}
+    .pmon .pw-line.main .ic{width:10px;height:10px;}
+    .pmon .pw-line.gap{margin-top:2px;padding-top:2px;}
+    .pmon .pw-empty{font-size:8.8px;padding:3px 0;}
+    .pmon .pw-deliv{font-size:9.2px;padding:3px 0;}
+    .pmon .pw-memo{font-size:8px;margin-top:2.5px;padding-top:2px;}
+    .pwrap-month .pweek-ttl{font-size:17px;}
+    .pwrap-month .pweek-sub{font-size:10.5px;margin-top:1px;}
+    .pwrap-month .pweek-brand{font-size:10px;} .pwrap-month .pweek-brand b{font-size:11.5px;}
+    .pwrap-month .pweek-badge{width:25px;height:25px;}
+    .pwrap-month .pweek-head{margin-bottom:5px;}
+    .pwrap-month .pweek-wave{height:5px;margin-bottom:5px;}
+    .pwrap-month .pweek-foot{margin-top:4px;font-size:9.5px;}
+    .pwrap-month .pweek-deco svg{width:21px;height:21px;}
+    .pwrap-month .pweek-deco{bottom:6px;left:10px;}
   }
 
   /* 커스텀 확인/알림 모달 — 게시된 화면을 감싸는 프레임에 따라 브라우저 기본 confirm()/alert()가
@@ -329,9 +469,9 @@ try{ var _tm = localStorage.getItem('meal_app_theme_mode');
   #modalBtns{display:flex;justify-content:flex-end;gap:8px;}
 
   /* ===== 로그인·회원가입 게이트 ===== */
-  #authGate{position:fixed;inset:0;z-index:300;background:var(--bg,#faf9f5);display:flex;align-items:center;justify-content:center;padding:24px;overflow:auto;}
+  #authGate{position:fixed;inset:0;z-index:300;background:var(--bg,#eaf3fb);display:flex;align-items:center;justify-content:center;padding:24px;overflow:auto;}
   #authGate[hidden]{display:none;}
-  .auth-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px 26px;width:100%;max-width:400px;box-shadow:0 10px 34px rgba(0,0,0,.10);}
+  .auth-card{background:var(--surface);border:var(--bw) solid var(--border);border-radius:16px;padding:28px 26px;width:100%;max-width:400px;box-shadow:0 10px 34px rgba(0,0,0,.10);}
   .auth-brand{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
   .auth-brand .brand-mark{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:800;}
   .auth-brand b{font-size:15.5px;display:block;}
@@ -340,7 +480,7 @@ try{ var _tm = localStorage.getItem('meal_app_theme_mode');
   .auth-tabs button{flex:1;border:0;background:transparent;padding:8px 0;border-radius:8px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;}
   .auth-tabs button.active{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.10);}
   .auth-field{display:block;margin-bottom:12px;font-size:12px;color:var(--muted);font-weight:600;}
-  .auth-field input{width:100%;box-sizing:border-box;margin-top:5px;padding:10px 12px;border:1px solid var(--border);border-radius:9px;background:var(--surface);color:var(--ink);font-size:14px;}
+  .auth-field input{width:100%;box-sizing:border-box;margin-top:5px;padding:10px 12px;border:var(--bw) solid var(--border);border-radius:9px;background:var(--surface);color:var(--ink);font-size:14px;}
   .auth-submit{width:100%;padding:11px 0;border:0;border-radius:9px;background:var(--accent,#1f6f3f);color:#fff;font-size:14px;font-weight:700;cursor:pointer;margin-top:4px;}
   .auth-submit:disabled{opacity:.6;cursor:default;}
   .auth-msg{margin-top:12px;font-size:12.5px;line-height:1.6;padding:10px 12px;border-radius:9px;}
@@ -356,7 +496,7 @@ try{ var _tm = localStorage.getItem('meal_app_theme_mode');
   .auth-linkbtn{background:none;border:0;color:var(--muted);font-size:12px;text-decoration:underline;cursor:pointer;padding:0;}
 
   /* ===== 로그인 사용자 표시 ===== */
-  .me-box{border-top:1px solid var(--border);padding:10px 2px 8px;margin-bottom:6px;}
+  .me-box{border-top:var(--bw) solid var(--border);padding:10px 2px 8px;margin-bottom:6px;}
   .me-box .me-name{font-size:12.5px;font-weight:700;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .me-box .me-mail{font-size:10.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .me-box .me-row{display:flex;align-items:center;gap:6px;margin-top:6px;}
@@ -383,26 +523,124 @@ try{ var _tm = localStorage.getItem('meal_app_theme_mode');
    * 카드 폭이 좁아 한 줄에 다 넣으면 숫자가 붙어버리므로 "수량줄 / 금액줄"로 나눈다. */
   .snackrow .sr-pick{width:100%;font-size:12px;padding:3px 5px;}
   .snackrow .sr-link{font-size:10.5px;color:var(--accent-strong);line-height:1.3;}
-  .snackrow .sr-nums{align-items:flex-end;}
-  .snackrow .sr-nums label{flex:0 1 auto;}
-  .snackrow .sr-unit{flex:none;font-size:11px;color:var(--ink-faint);padding-bottom:4px;}
-  .snackrow .sr-nums .iconbtn{margin-left:auto;}
-  .snackrow .sr-price{display:flex;align-items:center;gap:6px;font-size:10.5px;color:var(--ink-faint);
-    border-top:1px dashed var(--border-soft);padding-top:5px;}
-  .snackrow .sr-price input{width:74px;text-align:right;font-size:12px;padding:3px 5px;}
-  .snackrow .sr-price .sr-auto{font-size:12px;font-weight:600;color:var(--ink);}
-  .snackrow .sr-sub{margin-left:auto;font-size:12.5px;font-weight:700;color:var(--ink);}
+  /* 수량·단위·단가·소계·삭제를 한 행에 — 수량 칸은 두 자리면 충분하므로 크게 줄인다 */
+  .snackrow .sr-nums{align-items:flex-end;gap:5px;flex-wrap:nowrap;}
+  .snackrow .sr-nums label{flex:none;}
+  .snackrow .sr-qty{width:46px;}
+  .snackrow .sr-qty input{width:100%;text-align:right;padding:3px 4px;}
+  .snackrow .sr-unit{flex:none;font-size:10.5px;color:var(--ink-faint);padding-bottom:4px;}
+  .snackrow .sr-unitprice{width:66px;}
+  .snackrow .sr-unitprice input{width:100%;text-align:right;padding:3px 4px;}
+  .snackrow .sr-auto{display:block;font-size:11.5px;font-weight:600;color:var(--ink);
+    text-align:right;padding:3px 4px;border:1px dashed var(--border-soft);border-radius:6px;}
+  .snackrow .sr-sub{margin-left:auto;font-size:12.5px;font-weight:700;color:var(--ink);padding-bottom:3px;}
   /* 보기 전용 계정용 간식 줄 — 입력칸 없이 품목과 수량만 */
   .snackread{display:flex;align-items:baseline;gap:8px;padding:5px 9px;border:1px solid var(--border-soft);
     border-radius:8px;background:var(--surface-2);margin-bottom:5px;}
   .snackread .sr-rname{flex:1;min-width:0;font-size:12.5px;font-weight:500;color:var(--ink);word-break:keep-all;}
   .snackread .sr-rqty{flex:none;font-size:11.5px;color:var(--ink-soft);font-variant-numeric:tabular-nums;}
-  /* 보기 전용 계정의 식단 카드 — 입력칸 대신 분류별 읽기 줄 */
+  /* 보기 전용 계정의 식단 카드 — 입력칸 대신 읽기 줄 */
   .readlines .mc-line{display:flex;align-items:baseline;gap:6px;padding:2px 0 2px 7px;
     border-left:3px solid var(--border);border-radius:1px;margin-bottom:4px;line-height:1.35;}
   .readlines .mc-cat{flex:none;min-width:32px;font-size:10px;font-weight:700;color:var(--ink-faint);}
   .readlines .mc-menu{font-size:12.5px;color:var(--ink);font-weight:500;word-break:keep-all;}
+  /* 월간과 같은 줄 모양(메뉴명만·메인 강조)을 주간 카드에서도 쓴다 */
+  .readlines .mline{font-size:12.5px;line-height:1.55;color:var(--ink);text-align:center;word-break:keep-all;}
+  .readlines .mline.main{font-weight:700;color:var(--accent-strong);
+    text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:3px;font-size:13.5px;}
+  .readlines .mline.gap{margin-top:8px;padding-top:7px;border-top:1px dashed var(--border-soft);}
   .readmemo{font-size:11.5px;color:var(--ink-faint);border-top:1px dashed var(--border-soft);padding-top:5px;word-break:keep-all;}
+  /* ---------- 거래처 관리 ----------
+   * 좁은 표 대신 카드로 펼쳐, 거래처명·연락처·주문링크·연결된 재료를 한눈에 보게 한다. */
+  .supgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px;align-items:start;}
+  .supcard{background:var(--surface);border:var(--bw) solid var(--border);border-radius:12px;padding:14px 15px 12px;
+    display:flex;flex-direction:column;gap:10px;box-shadow:var(--shadow);}
+  .supcard.collapsed{padding:0;gap:0;}
+  .supcard .sup-sum{display:flex;align-items:center;gap:9px;cursor:pointer;padding:11px 13px;border-radius:11px;min-width:0;}
+  .supcard .sup-sum:hover{background:var(--surface-2);}
+  .supcard .sup-caret{flex:none;font-size:11px;color:var(--ink-faint);width:10px;}
+  .supcard .sup-sname{flex:1;min-width:0;font-size:14.5px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .supcard .sup-link{flex:none;font-size:14px;text-decoration:none;}
+  .supcard .sup-link.off{opacity:.25;}
+  .supcard .sup-phone{flex:none;font-size:11.5px;color:var(--ink-soft);font-variant-numeric:tabular-nums;}
+  .supcard .sup-head{display:flex;align-items:center;gap:8px;}
+  .supcard .sup-name{flex:1;min-width:0;font-size:16px;font-weight:700;color:var(--ink);
+    border:1px solid transparent;background:transparent;border-radius:7px;padding:4px 6px;}
+  .supcard .sup-name:hover{border-color:var(--border-soft);}
+  .supcard .sup-name:focus{border-color:var(--accent);background:var(--surface);outline:none;}
+  .supcard .sup-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .supcard .field{display:flex;flex-direction:column;gap:3px;min-width:0;}
+  .supcard .field > span{font-size:10.5px;font-weight:600;color:var(--ink-faint);}
+  .supcard input{width:100%;min-width:0;font-size:13px;padding:6px 8px;border:var(--bw) solid var(--border);
+    border-radius:7px;background:var(--surface);color:var(--ink);}
+  .supcard .sup-urlrow{display:flex;gap:6px;align-items:center;}
+  .supcard .sup-urlrow .btn{flex:none;white-space:nowrap;}
+  .supcard .sup-foot{display:flex;flex-wrap:wrap;gap:4px;align-items:center;
+    border-top:1px dashed var(--border-soft);padding-top:9px;}
+
+  /* ---------- 메뉴 관리 ----------
+   * 위: 가로로 펼친 입력란 / 아래: 분류(밥·국·메인·반찬…)마다 세로 열 하나. */
+  .mk-top{margin-bottom:14px;}
+  .mk-top .mk-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;}
+  .mk-top .mk-title{font-size:14.5px;font-weight:700;}
+  .mk-top.mk-idle{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .mk-lab{font-size:10.5px;font-weight:600;color:var(--ink-faint);display:block;margin-bottom:3px;}
+  .mk-row{display:grid;gap:10px;margin-bottom:12px;}
+  .mk-row.r1{grid-template-columns:1.6fr .9fr .9fr 1.4fr;}
+  .mk-row input,.mk-row select{width:100%;}
+  .mk-ing{border-top:1px dashed var(--border-soft);padding-top:10px;}
+  .mk-inghead,.mk-ingrow{display:grid;grid-template-columns:2.1fr .7fr .8fr .95fr .8fr .85fr 30px;gap:7px;align-items:center;}
+  .mk-inghead{font-size:10px;font-weight:600;color:var(--ink-faint);padding:0 2px 4px;}
+  .mk-ingrow{margin-bottom:6px;}
+  .mk-ingrow input,.mk-ingrow select{width:100%;min-width:0;font-size:12.5px;padding:6px 8px;}
+  .mk-ingpick{display:flex;flex-direction:column;gap:4px;min-width:0;}
+  .mk-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;
+    border-top:1px dashed var(--border-soft);padding-top:11px;margin-top:4px;}
+
+  /* 가로 스크롤바를 항상 보이게 두껍게. 배경을 끌면 좌우로 움직인다. */
+  .mk-board{display:flex;gap:12px;overflow-x:auto;padding-bottom:14px;align-items:flex-start;margin-bottom:18px;
+    cursor:grab;scrollbar-color:var(--border) var(--surface-2);scrollbar-width:auto;overscroll-behavior-x:contain;}
+  .mk-board.panning{cursor:grabbing;user-select:none;}
+  .mk-board::-webkit-scrollbar{height:13px;}
+  .mk-board::-webkit-scrollbar-track{background:var(--surface-2);border-radius:8px;}
+  .mk-board::-webkit-scrollbar-thumb{background:var(--border);border-radius:8px;border:3px solid var(--surface-2);}
+  .mk-board::-webkit-scrollbar-thumb:hover{background:var(--ink-faint);}
+  .mk-col{flex:0 0 236px;display:flex;flex-direction:column;}
+  .mk-colhead{display:flex;align-items:center;gap:7px;padding:8px 11px;border-radius:10px 10px 0 0;
+    background:var(--surface-2);border:var(--bw) solid var(--border);border-bottom:none;}
+  .mk-colhead b{font-size:13px;}
+  .mk-colhead .n{font-size:10.5px;color:var(--ink-faint);font-weight:600;margin-left:auto;}
+  .mk-colhead{cursor:grab;}
+  .mk-colhead:active{cursor:grabbing;}
+  .mk-colhead .grip{flex:none;font-size:11px;color:var(--ink-faint);letter-spacing:-1px;}
+  .mk-col.dropping .mk-colhead{background:var(--accent-soft);border-color:var(--accent);}
+  .mk-col.dropping .mk-colbody{border-color:var(--accent);background:var(--accent-soft);}
+  .mk-item[draggable="true"]{cursor:grab;}
+  .mk-item[draggable="true"]:active{cursor:grabbing;}
+  .mk-colbody{border:var(--bw) solid var(--border);border-radius:0 0 10px 10px;background:var(--surface);
+    padding:9px;display:flex;flex-direction:column;gap:7px;min-height:90px;}
+  .mk-item{border:var(--bw) solid var(--border-soft);border-radius:9px;padding:8px 9px;background:var(--surface);}
+  .mk-item .nm{font-size:13px;font-weight:600;margin-bottom:5px;word-break:keep-all;}
+  .mk-item .mt{display:flex;align-items:center;justify-content:space-between;gap:6px;min-width:0;}
+  .mk-item .acts{display:flex;gap:3px;flex:none;}
+  .mk-item .acts .btn{padding:3px 7px;font-size:11px;}
+  .board-hint{font-size:11px;color:var(--ink-faint);align-self:center;margin-left:auto;}
+  @media (max-width:1100px){.board-hint{display:none;}}
+  .mk-item .mt + .mt{margin-top:3px;}
+  /* 재료·상품 열 — 구매상품명 한 줄이 더 붙어 카드가 조금 넓다 */
+  .ing-col{flex:0 0 262px;}
+  .ing-prod{font-size:10.5px;color:var(--ink-soft);margin-bottom:5px;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .mk-row.ing-r1{grid-template-columns:1.8fr .9fr .8fr 1fr;}
+  .mk-row.ing-r2{grid-template-columns:2.2fr 1fr .9fr .9fr;}
+  .mk-row.ing-r3{grid-template-columns:1.6fr 1fr;margin-bottom:0;}
+
+  /* ---------- 설정 ----------
+   * 짧은 카드(기본 운영·용역부)는 나란히 두고, 표·칩이 들어가는 카드는 가로를 다 쓴다.
+   * 예전에는 한 카드에 전부 이어 붙여 오른쪽 절반이 통째로 비어 있었다. */
+  .set-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start;}
+  .set-grid .set-wide{grid-column:1/-1;}
+  @media (max-width:900px){.set-grid{grid-template-columns:1fr;}}
 </style>
 
 <div id="authGate" hidden>
@@ -471,9 +709,8 @@ try{ var _tm = localStorage.getItem('meal_app_theme_mode');
         <span class="nav-label"><span>간식표 · 도시락</span><span class="nav-sub">간식 기입 · 도시락 구성</span></span>
       </button>
     </div>
-    <div class="nav-sep"></div>
-    <div class="navgroup" data-group="manage">
-      <div class="nav-group-label">관리</div>
+    <div class="navgroup navgroup-dept dept-manage" data-group="manage">
+      <div class="nav-dept-label">관리</div>
       <button class="navbtn" data-tab="menus" onclick="setTab('menus')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="5" x2="19" y2="5"/><line x1="5" y1="10.3" x2="19" y2="10.3"/><line x1="5" y1="15.6" x2="19" y2="15.6"/><line x1="5" y1="19" x2="13" y2="19"/></svg>
         메뉴 관리
@@ -491,12 +728,15 @@ try{ var _tm = localStorage.getItem('meal_app_theme_mode');
         원가분석
       </button>
     </div>
-    <div class="nav-sep"></div>
-    <div class="navgroup" data-group="admin">
-      <div class="nav-group-label">설정</div>
+    <div class="navgroup navgroup-dept dept-admin" data-group="admin">
+      <div class="nav-dept-label">설정</div>
+      <button class="navbtn" data-tab="suppliers" onclick="setTab('suppliers')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5h13v9H3z"/><path d="M16 11.5h3.2l1.8 3v3H16z"/><circle cx="7" cy="18.5" r="1.6"/><circle cx="17.5" cy="18.5" r="1.6"/></svg>
+        거래처 관리
+      </button>
       <button class="navbtn" data-tab="settings" onclick="setTab('settings')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="14" cy="6" r="2"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="9" cy="12" r="2"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="16" cy="18" r="2"/></svg>
-        설정 · 거래처
+        설정
       </button>
       <button class="navbtn" data-tab="users" onclick="setTab('users')" hidden>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c.6-3.6 3.3-5.5 6.5-5.5s5.9 1.9 6.5 5.5"/><path d="M17 11.5l1.6 1.6L22 9.7"/></svg>
@@ -687,7 +927,7 @@ function showFormModal(bodyHtml, buttons){
     if(firstInput) firstInput.focus();
   });
 }
-const MODAL_INPUT_STYLE = 'width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--ink);font-size:13.5px;';
+const MODAL_INPUT_STYLE = 'width:100%;box-sizing:border-box;padding:8px 10px;border:var(--bw) solid var(--border);border-radius:8px;background:var(--surface);color:var(--ink);font-size:13.5px;';
 /** 새 이름 하나만 입력받는 프롬프트. 취소하면 null. */
 function customPromptText(message, placeholder){
   const bodyHtml = `<div style="margin-bottom:10px;">${esc(message)}</div><input id="modalPromptInput" type="text" placeholder="${esc(placeholder||'')}" style="${MODAL_INPUT_STYLE}">`;
@@ -703,7 +943,7 @@ function promptNewTheme(){
     <div style="margin-bottom:10px;">새 테마(데이) 이름을 입력하세요. 예: 튀김데이</div>
     <input id="modalPromptInput" type="text" placeholder="예: 튀김데이" style="${MODAL_INPUT_STYLE}margin-bottom:10px;">
     <label style="font-size:12.5px;color:var(--ink-soft);">표시 색상<br>
-      <select id="modalPromptColor" style="margin-top:4px;padding:6px 8px;border:1px solid var(--border);border-radius:7px;background:var(--surface);color:var(--ink);">
+      <select id="modalPromptColor" style="margin-top:4px;padding:6px 8px;border:var(--bw) solid var(--border);border-radius:7px;background:var(--surface);color:var(--ink);">
         ${THEME_COLOR_CHOICES.map(c=>`<option value="${c}">${colorLabel[c]||c}</option>`).join('')}
       </select>
     </label>`;
@@ -2004,7 +2244,7 @@ function setTab(tab){
   if(!canViewTab(tab)) tab = 'dashboard';
   activeTab = tab;
   document.querySelectorAll('.navbtn').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
-  const titles = {dashboard:'대시보드', plan:'영업부 식단표', menus:'메뉴 관리', ingredients:'재료·상품 관리', service:'용역부 간식표', order:'재료구매 · 발주', cost:'원가분석표', settings:'설정 · 거래처', users:'회원 관리'};
+  const titles = {dashboard:'대시보드', plan:'영업부 식단표', menus:'메뉴 관리', ingredients:'재료·상품 관리', service:'용역부 간식표', order:'재료구매 · 발주', cost:'원가분석표', settings:'설정', suppliers:'거래처 관리', users:'회원 관리'};
   const subs = {
     dashboard:'이번 주 급식 현황을 한눈에 확인합니다',
     plan:'영업부가 사내에서 먹는 점심 식단을 편성합니다 (간식표도 여기서 관리)',
@@ -2013,7 +2253,8 @@ function setTab(tab){
     ingredients:'메뉴에서 쓰는 재료가 실제로 어떤 상품·단위·가격으로 구매되는지 등록합니다',
     order:'식단표에 맞춰 재료 발주서를 만들고 발주·결제 상태를 관리합니다',
     cost:'기간별 식재료비와 예산 대비 현황을 분석합니다',
-    settings:'인원수, 요일 테마, 거래처 등 운영 기준을 설정합니다',
+    settings:'인원수, 요일 테마, 분류 등 운영 기준을 설정합니다',
+    suppliers:'재료를 사오는 거래처를 등록하고 주문 링크·담당 품목을 관리합니다',
     users:'가입 신청을 승인하고 회원별 권한을 지정합니다',
   };
   document.getElementById('pageTitle').textContent = titles[tab];
@@ -2045,6 +2286,7 @@ async function render(){
   else if(activeTab==='order') html = renderOrder();
   else if(activeTab==='cost'){ await ensureWeekLoaded(costWeekMonday); html = renderCost(); }
   else if(activeTab==='settings') html = renderSettings();
+  else if(activeTab==='suppliers') html = renderSuppliers();
   else if(activeTab==='users'){ await loadUsers(); html = renderUsers(); }
   // 이 render() 호출이 실행되는 동안 더 최신 render()가 이미 시작됐다면
   // (예: 네트워크 지연 중 사용자가 다른 탭을 클릭한 경우) 이 결과는 오래된 것이므로
@@ -2232,78 +2474,171 @@ function printLegend(cats){
   }).join('');
   return `<div class="print-legend">${items}</div>`;
 }
-/** 인쇄용 주간 식단표 — 분류를 행으로 묶고 색을 달리해 한눈에 들어오게 만든다. 금액 없음. */
-function renderPlanPrintWeek(dates){
-  const cats = planPrintCategories(dates);
-  const deliveryShown = {};
-  const head = dates.map((d,i)=>{
-    const day = S.mealPlan[toKey(d)];
-    const theme = day ? day.lunch.theme : '';
-    return `<th><div class="ps-day">${WD_LABEL[i]}요일</div><div class="ps-date">${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())}</div>${theme?`<div class="ps-theme">${esc(theme)}</div>`:''}</th>`;
-  }).join('');
-  const rows = cats.map((cat, rowIdx)=>{
-    const cells = dates.map((d,ci)=>{
-      const day = S.mealPlan[toKey(d)];
-      if(!day) return `<td><span class="ps-empty">—</span></td>`;
-      if(day.lunch.type === 'delivery'){
-        if(deliveryShown[ci]) return `<td></td>`;
-        deliveryShown[ci] = true;
-        return `<td class="ps-delivery">🚚 ${esc(day.lunch.theme)}<div class="ps-memo" style="text-align:center;">${esc(day.lunch.memo||'배달')}</div></td>`;
-      }
-      const names = (day.lunch.slots||[]).filter(sl=>sl.cat===cat && sl.id)
-        .map(sl=>{ const m = menuById(sl.id); return m ? esc(m.name) : ''; }).filter(Boolean);
-      return `<td>${names.length ? names.map(n=>`<div class="ps-item">${n}</div>`).join('') : '<span class="ps-empty">—</span>'}</td>`;
-    }).join('');
-    return `<tr class="${catColor(cat)}"><th class="ps-cat">${esc(catLabel(cat))}</th>${cells}</tr>`;
-  }).join('');
-  const hasMemo = dates.some(d=>{ const day = S.mealPlan[toKey(d)]; return day && day.lunch.type==='cook' && (day.lunch.memo||'').trim(); });
-  const memoRow = hasMemo ? `<tr class="ps-memorow"><th class="ps-cat">메모</th>${
-    dates.map(d=>{ const day = S.mealPlan[toKey(d)]; return `<td class="ps-memo">${esc((day && day.lunch.type==='cook' && day.lunch.memo)||'')}</td>`; }).join('')
-  }</tr>` : '';
-  const body = cats.length ? rows + memoRow
-    : `<tr><td colspan="6" style="padding:26px;color:#a9a9a2;">편성된 식단이 없습니다.</td></tr>`;
+/** 인쇄물에 들어가는 음식 아이콘.
+ *  외부 이미지를 쓰면 인터넷이 끊기거나 GitHub에 파일을 빠뜨렸을 때 깨지므로, 직접 그린 SVG를
+ *  문자열로 들고 있는다. 어떤 그림을 쓸지는 "분류"로만 정한다 — 메뉴 이름을 넘겨짚어 엉뚱한
+ *  그림이 붙는 일이 없도록, 사용자가 지정한 분류만 신뢰한다. 모르는 분류는 기본 접시 그림. */
+const FOOD_ICONS = {
+  // 밥 — 공기에 담긴 흰 쌀밥
+  rice:   '<path d="M3.6 10.4q6.4-6.2 12.8 0z" fill="#fdfaf2" stroke="#9a8257" stroke-width="1.25" stroke-linejoin="round"/><path d="M6.6 8.4q1-1.1 2.3-1.2M10.8 7.3q1.3.2 2.2 1.2" stroke="#d9c08a" stroke-width="1.05" stroke-linecap="round" fill="none"/><path d="M2.2 10.4h15.6l-1.6 4.8a2.1 2.1 0 0 1-2 1.4H5.8a2.1 2.1 0 0 1-2-1.4z" fill="#dce6f0" stroke="#5f7183" stroke-width="1.25" stroke-linejoin="round"/><path d="M1.2 10.4h17.6" stroke="#5f7183" stroke-width="1.4" stroke-linecap="round"/>',
+  // 국·찌개 — 김이 오르는 뚝배기
+  soup:   '<path d="M2.4 8.8h15.2l-1.5 5.4a2.2 2.2 0 0 1-2.1 1.6H6a2.2 2.2 0 0 1-2.1-1.6z" fill="#f4c391" stroke="#a9682c" stroke-width="1.1" stroke-linejoin="round"/><path d="M1.4 8.8h17.2" stroke="#a9682c" stroke-width="1.3" stroke-linecap="round"/><path d="M6.6 6.4q-1.2-1.4 0-2.8M10 6.4q-1.2-1.4 0-2.8M13.4 6.4q-1.2-1.4 0-2.8" stroke="#c98f4e" stroke-width="1.1" stroke-linecap="round" fill="none"/>',
+  // 메인 — 닭다리(그날의 주메뉴)
+  main:   '<path d="M3 13.6a7 7 0 0 1 14 0z" fill="#e8a24f" stroke="#9c5418" stroke-width="1.3" stroke-linejoin="round"/><circle cx="10" cy="5.2" r="1.25" fill="#9c5418"/><path d="M1.6 13.6h16.8" stroke="#9c5418" stroke-width="1.5" stroke-linecap="round"/><path d="M2.8 16.2h14.4" stroke="#c9802f" stroke-width="1.5" stroke-linecap="round"/>',
+  // 면 — 면발과 젓가락
+  noodle: '<path d="M2.6 9.4h14.8l-1.5 5a2.2 2.2 0 0 1-2.1 1.6H6.2a2.2 2.2 0 0 1-2.1-1.6z" fill="#fbeccb" stroke="#a98433" stroke-width="1.1" stroke-linejoin="round"/><path d="M1.6 9.4h16.8" stroke="#a98433" stroke-width="1.3" stroke-linecap="round"/><path d="M4.8 7.6q1.3-2.4 2.6 0 1.3 2.4 2.6 0 1.3-2.4 2.6 0" stroke="#d9ab4e" stroke-width="1.15" stroke-linecap="round" fill="none"/><path d="M14.6 3.2l1.8 5.2" stroke="#8d6b2a" stroke-width="1.1" stroke-linecap="round"/>',
+  // 반찬 — 종지에 담긴 찬
+  side:   '<path d="M2.6 9.6h14.8l-1.2 4.5a2.1 2.1 0 0 1-2 1.5H5.8a2.1 2.1 0 0 1-2-1.5z" fill="#eef4e6" stroke="#6b8a4c" stroke-width="1.1" stroke-linejoin="round"/><path d="M1.6 9.6h16.8" stroke="#6b8a4c" stroke-width="1.25" stroke-linecap="round"/><circle cx="7" cy="7.2" r="1.7" fill="#9dc26e" stroke="#5f7f42" stroke-width="1"/><circle cx="11.6" cy="6.9" r="2" fill="#bcd694" stroke="#5f7f42" stroke-width="1"/>',
+  // 샐러드·채소 — 잎채소
+  salad:  '<path d="M10 16.5V9" stroke="#5f8a46" stroke-width="1.3" stroke-linecap="round"/><path d="M9.6 9.4Q4.2 9 3.4 4.2 8.6 4 9.6 9.4z" fill="#a8cc80" stroke="#4e7538" stroke-width="1.1" stroke-linejoin="round"/><path d="M10.4 10.4q5-1 5.6-5.6-4.9.2-5.6 5.6z" fill="#8fbd68" stroke="#4e7538" stroke-width="1.1" stroke-linejoin="round"/>',
+  // 김치 — 붉은 김치 종지
+  kimchi: '<path d="M2.6 9.8h14.8l-1.2 4.4a2.1 2.1 0 0 1-2 1.5H5.8a2.1 2.1 0 0 1-2-1.5z" fill="#fbe7e2" stroke="#a84a3c" stroke-width="1.1" stroke-linejoin="round"/><path d="M1.6 9.8h16.8" stroke="#a84a3c" stroke-width="1.25" stroke-linecap="round"/><path d="M5.4 8.4q1.2-4.2 4.6-4.2t4.6 4.2z" fill="#e2735c" stroke="#a84a3c" stroke-width="1.05" stroke-linejoin="round"/>',
+  // 후식·간식 — 컵디저트
+  dessert:'<path d="M5 8.2h10l-1 7.1a1.7 1.7 0 0 1-1.7 1.4H7.7A1.7 1.7 0 0 1 6 15.3z" fill="#fdeef3" stroke="#b0507a" stroke-width="1.1" stroke-linejoin="round"/><path d="M4 8.2h12" stroke="#b0507a" stroke-width="1.25" stroke-linecap="round"/><path d="M6.6 6.6q.9-3.4 3.4-3.4t3.4 3.4z" fill="#f3a7c2" stroke="#b0507a" stroke-width="1.05" stroke-linejoin="round"/>',
+  // 그 밖 — 접시
+  dish:   '<path d="M2.4 9.6h15.2l-1.3 4.6a2.2 2.2 0 0 1-2.1 1.6H5.8a2.2 2.2 0 0 1-2.1-1.6z" fill="#f4f2ea" stroke="#8e856e" stroke-width="1.1" stroke-linejoin="round"/><path d="M1.4 9.6h17.2" stroke="#8e856e" stroke-width="1.3" stroke-linecap="round"/><ellipse cx="10" cy="7" rx="3.6" ry="1.9" fill="#ddd7c6" stroke="#8e856e" stroke-width="1"/>'
+};
+function foodIconKey(cat){
+  const c = String(cat||'');
+  if(c==='밥') return 'rice';
+  if(c==='국') return 'soup';
+  if(c==='메인') return 'main';
+  if(c==='면') return 'noodle';
+  if(c==='반찬') return 'side';
+  if(c==='간식' || c==='후식') return 'dessert';
+  if(c.indexOf('메인')>=0) return 'main';
+  if(c.indexOf('밥')>=0) return 'rice';
+  if(c.indexOf('국')>=0 || c.indexOf('찌개')>=0 || c.indexOf('탕')>=0) return 'soup';
+  if(c.indexOf('면')>=0) return 'noodle';
+  if(c.indexOf('김치')>=0) return 'kimchi';
+  if(c.indexOf('샐러드')>=0 || c.indexOf('채소')>=0) return 'salad';
+  if(c.indexOf('후식')>=0 || c.indexOf('간식')>=0 || c.indexOf('디저트')>=0) return 'dessert';
+  if(c.indexOf('반찬')>=0) return 'side';
+  return 'dish';
+}
+/** 인쇄물 꾸밈 그림 — 글머리 배지, 오른쪽 위 채소 낙서, 머리글 밑 물결선. 모두 직접 그린 도형이다. */
+const BADGE_SVG = '<svg class="pweek-badge" viewBox="0 0 32 32" aria-hidden="true">'
+  + '<circle cx="16" cy="16" r="15" fill="#fdf0dc" stroke="#d9a35e" stroke-width="1.6"/>'
+  + '<path d="M7.5 17.5h17l-1.8 6a2.6 2.6 0 0 1-2.5 1.9h-8.4a2.6 2.6 0 0 1-2.5-1.9z" fill="#ffffff" stroke="#b07a3c" stroke-width="1.5" stroke-linejoin="round"/>'
+  + '<path d="M6.2 17.5h19.6" stroke="#b07a3c" stroke-width="1.7" stroke-linecap="round"/>'
+  + '<path d="M9.5 15q6.5-6.5 13 0z" fill="#f6d79c" stroke="#b07a3c" stroke-width="1.4" stroke-linejoin="round"/>'
+  + '<path d="M11.5 10.5q-1.6-2 0-4M16 10.5q-1.6-2 0-4M20.5 10.5q-1.6-2 0-4" stroke="#d9a35e" stroke-width="1.4" stroke-linecap="round" fill="none"/></svg>';
+const DECO_SVG = [
+  // 당근
+  '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 10.5 L18 19a3 3 0 0 1-4.2 4.2L5.3 14.7z" fill="#ef9a4d" stroke="#bf6a21" stroke-width="1.5" stroke-linejoin="round"/><path d="M9.8 9.9q-1.2-5 3.4-6.4M10.6 9.4q3.4-3.6 7.4-1.6" stroke="#5f9a4a" stroke-width="1.7" stroke-linecap="round" fill="none"/></svg>',
+  // 토마토
+  '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="14.5" r="7.5" fill="#e8705c" stroke="#b03e2e" stroke-width="1.5"/><path d="M12 7V4M12 7 7.5 4.8M12 7l4.5-2.2" stroke="#5f9a4a" stroke-width="1.7" stroke-linecap="round"/></svg>',
+  // 브로콜리
+  '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 13.5v7.5" stroke="#6b8a4c" stroke-width="2" stroke-linecap="round"/><path d="M6.5 13.5q-2.6-4.4 2-5.6.5-4.2 4.6-3.4 3.4-1.4 4.6 2.2 3.4 2.4.8 6.8z" fill="#8fbd68" stroke="#4e7538" stroke-width="1.5" stroke-linejoin="round"/></svg>'
+].join('');
+const WAVE_SVG = '<svg class="pweek-wave" viewBox="0 0 600 7" preserveAspectRatio="none" aria-hidden="true">'
+  + '<path d="M0 4q15-4 30 0t30 0 30 0 30 0 30 0 30 0 30 0 30 0 30 0 30 0 30 0 30 0 30 0 30 0 30 0 30 0 30 0 30 0 30 0 30 0" fill="none" stroke="#e3d2ae" stroke-width="1.6"/></svg>';
+function foodIconSvg(cat){
+  const body = FOOD_ICONS[foodIconKey(cat)] || FOOD_ICONS.dish;
+  return `<svg class="ic" viewBox="0 0 20 20" aria-hidden="true">${body}</svg>`;
+}
+/* ---------- 인쇄물 공통 부품 ----------
+ * 주간(요일 카드) · 월간(달력) 네 가지 인쇄물이 같은 테두리·바탕·꾸밈을 쓰도록 한 곳에 모은다.
+ * 여기만 고치면 영업부/용역부, 주간/월간 인쇄물이 한꺼번에 같이 바뀐다. */
+
+/** 그 달의 달력에 들어가는 각 주의 월요일 목록(기존 월간 화면과 같은 방식). */
+function monthWeekMondays(y, m){
+  const last = new Date(y, m+1, 0);
+  let mon = mondayOf(new Date(y, m, 1));
+  const weeks = [];
+  while(mon <= last){ weeks.push(new Date(mon)); mon = addDays(mon, 7); }
+  return weeks;
+}
+/** 인쇄물 바깥 틀(점무늬 바탕 + 머리글 + 물결선 + 꼬리말). */
+function printShell(opts){
+  const head = esc(opts.titleHead||''), em = esc(opts.titleEm||''), tail = esc(opts.titleTail||'');
+  const kind = opts.kind==="month" ? " pwrap-month" : " pwrap-week";
   return `<div class="printonly">
-    <h2 class="print-title">영업부 주간 식단표</h2>
-    <div class="print-sub">${fmtMD(dates[0])} ~ ${fmtMD(dates[4])} · Unbelievable Company</div>
-    <table class="printsheet">
-      <thead><tr><th class="ps-cat">구분</th>${head}</tr></thead>
-      <tbody>${body}</tbody>
-    </table>
-    ${printLegend(cats)}
+    <div class="pweek-wrap${kind}">
+      <div class="pweek-deco">${DECO_SVG}</div>
+      <div class="pweek-head">
+        <div>
+          <div class="pweek-ttlrow">
+            ${BADGE_SVG}
+            <h2 class="pweek-ttl">${head}${em?` <em>${em}</em>`:''}${tail?` ${tail}`:''}</h2>
+          </div>
+          <div class="pweek-sub">${esc(opts.sub||'')}</div>
+        </div>
+        <div class="pweek-brand"><b>Unbelievable Company</b>${esc(opts.note||'맛있게 드세요')}</div>
+      </div>
+      ${WAVE_SVG}
+      ${opts.body||''}
+      <div class="pweek-foot"><span class="dot"></span>${esc(opts.foot||'표시된 내용은 사정에 따라 바뀔 수 있습니다')}<span class="dot"></span></div>
+    </div>
   </div>`;
 }
-/** 인쇄용 월간 식단표 — 달력 칸마다 분류별 색 막대로 구분. 금액 없음. */
-function renderPlanPrintMonth(weekMondays){
-  const rows = weekMondays.map(wk=>{
-    const wdates = weekDates(wk);
-    const cells = wdates.map(d=>{
-      const inMonth = d.getMonth() === planMonth.m;
-      const day = S.mealPlan[toKey(d)];
-      let body = '<span class="ps-empty" style="font-size:11px;">—</span>';
-      if(day && day.lunch.type === 'delivery'){
-        body = `<div class="pm-item pk4">🚚 ${esc(day.lunch.theme)}</div>`;
-      } else if(day){
-        const items = (day.lunch.slots||[]).filter(sl=>sl.id).map(sl=>{
-          const m = menuById(sl.id);
-          return m ? `<div class="pm-item ${catColor(sl.cat)}">${esc(m.name)}</div>` : '';
-        }).filter(Boolean).join('');
-        if(items) body = items;
-      }
-      return `<td class="${inMonth?'':'pm-out'}"><div class="pm-date">${fmtMD(d)}</div>${inMonth?body:''}</td>`;
-    }).join('');
-    return `<tr>${cells}</tr>`;
+
+/** 주간 요일 카드 5장. bodyFor(날짜, 번호)가 카드 안쪽 내용을 돌려준다. */
+function printWeekCards(dates, bodyFor, themeFor){
+  const cards = dates.map((d,i)=>{
+    const theme = themeFor ? (themeFor(d,i)||'') : '';
+    return `<div class="pwday pwd${i}">
+      <div class="pwday-h">
+        <div class="pwday-wd">${WD_LABEL[i]}요일</div>
+        <div class="pwday-dt">${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())}</div>
+        ${theme?`<div class="pwday-th">${esc(theme)}</div>`:''}
+      </div>
+      <div class="pwday-b">${bodyFor(d,i) || '<div class="pw-empty">—</div>'}</div>
+    </div>`;
   }).join('');
-  const allCats = [];
-  weekMondays.forEach(wk=>planPrintCategories(weekDates(wk)).forEach(c=>{ if(!allCats.includes(c)) allCats.push(c); }));
-  return `<div class="printonly">
-    <h2 class="print-title">영업부 월간 식단표</h2>
-    <div class="print-sub">${planMonth.y}년 ${planMonth.m+1}월 · Unbelievable Company</div>
-    <table class="pmonth">
-      <thead><tr>${WD_LABEL.map(w=>`<th>${w}요일</th>`).join('')}</tr></thead>
-      <tbody>${rows}</tbody>
-    </table>
-    ${printLegend(allCats)}
-  </div>`;
+  return `<div class="pweek">${cards}</div>`;
+}
+
+/** 월간 달력. bodyFor(날짜)는 그 칸 내용을, monthIdx는 이번 달 판정에 쓴다. */
+function printMonthGrid(weekMondays, monthIdx, bodyFor){
+  const head = WD_LABEL.map((w,i)=>`<th class="mh${i}">${w}요일</th>`).join('');
+  const rows = weekMondays.map(wk=>`<tr>${
+    weekDates(wk).map(d=>{
+      const inMonth = d.getMonth() === monthIdx;
+      return `<td class="${inMonth?'':'pmon-out'}"><div class="pmon-d">${fmtMD(d)}</div>${
+        inMonth ? (bodyFor(d) || '<div class="pw-empty">—</div>') : ''}</td>`;
+    }).join('')
+  }</tr>`).join('');
+  return `<table class="pmon"><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+/** 간식처럼 {이름, 수량} 형태인 목록을 인쇄용 줄로 만든다(분류가 없으므로 후식 그림 고정). */
+function qtyLinesHtml(items){
+  return (items||[]).map(it=>
+    `<div class="pw-line">${foodIconSvg('간식')}<span class="nm">${esc(it.name)}<span class="qty">×${esc(it.qty)}</span></span></div>`
+  ).join('');
+}
+
+/** 인쇄용 주간 식단표 — 요일별 카드. 분류 이름은 적지 않고, 순서와 아이콘, 그날의 메인 강조로만
+ *  구분이 보이게 한다(표처럼 칸이 비지 않아 딱딱해 보이지 않는다). 금액 없음. */
+function planPrintDayBody(d){
+  const day = S.mealPlan[toKey(d)];
+  if(!day) return '';
+  if(day.lunch.type === 'delivery'){
+    return `<div class="pw-deliv">🚚 ${esc(day.lunch.theme || '배달')}</div>`
+         + (day.lunch.memo ? `<div class="pw-memo">${esc(day.lunch.memo)}</div>` : '');
+  }
+  return catIconLinesHtml(planMenuLines(day))
+       + ((day.lunch.memo||'').trim() ? `<div class="pw-memo">${esc(day.lunch.memo)}</div>` : '');
+}
+function renderPlanPrintWeek(dates){
+  return printShell({
+    titleHead:'이번 주', titleEm:'구내식당', titleTail:'식단표',
+    sub:`${fmtMD(dates[0])} ~ ${fmtMD(dates[4])}`,
+    foot:'표시된 메뉴는 사정에 따라 바뀔 수 있습니다',
+    body: printWeekCards(dates, planPrintDayBody,
+            d=>{ const day=S.mealPlan[toKey(d)]; return day ? day.lunch.theme : ''; })
+  });
+}
+/** 인쇄용 월간 식단표 — 주간 카드와 같은 결의 달력. 분류 이름 없이 순서·아이콘·메인 강조만. 금액 없음. */
+function renderPlanPrintMonth(weekMondays){
+  return printShell({
+    kind:"month",
+    titleHead:'', titleEm:planMonth.m+1+'월', titleTail:'구내식당 식단표',
+    sub:`${planMonth.y}년 ${planMonth.m+1}월`,
+    foot:'표시된 메뉴는 사정에 따라 바뀔 수 있습니다',
+    body: printMonthGrid(weekMondays, planMonth.m, planPrintDayBody)
+  });
 }
 
 function renderPlan(){
@@ -2489,14 +2824,7 @@ function renderPlanMonth(){
         if(!day){ bodyHtml = '<span class="muted">식단 없음</span>'; }
         else if(day.lunch.type==='delivery'){ bodyHtml = `🚚 ${esc(day.lunch.theme)}`; themeBadge = day.lunch.theme; }
         else {
-          const lines = (day.lunch.slots||[]).filter(s=>s.id).map(s=>{
-            const m = menuById(s.id); if(!m) return '';
-            const cat = s.cat || m.category || '';
-            const bar = PRINT_CAT_SWATCH[catColor(cat)] || '';
-            return `<div class="mc-line"${bar?` style="border-left-color:${bar};"`:''}>`
-                 + `<span class="mc-cat">${esc(catLabel(cat))}</span>`
-                 + `<span class="mc-menu">${esc(m.name)}</span></div>`;
-          }).filter(Boolean).join('');
+          const lines = planLinesHtml(day, 'mline');
           const memo = (day.lunch.memo||'').trim();
           bodyHtml = (lines || '<span class="muted">미편성</span>')
                    + (memo ? `<div class="mc-memo">📝 ${esc(memo)}</div>` : '');
@@ -2516,6 +2844,82 @@ function renderPlanMonth(){
   return printSheet + `<div class="monthweekrow screenonly">${rows}</div>
   <p class="muted screenonly" style="font-size:12px;margin-top:6px;">※ 칸을 클릭하면 해당 주간 편집 화면으로 이동합니다. 월간 보기는 요약·인쇄용이며, 실제 메뉴 수정은 주간 보기에서 합니다.</p>`;
 }
+/* ===================== 식단 줄 세우기 =====================
+ * 식단표에 메뉴를 늘어놓는 순서와 묶음을 한 곳에서 정한다.
+ *   밥·면 → 국 → 메인 → 서브메인 계열 → 그 밖의 반찬 → 간식
+ * 사용자가 새 분류를 만들어도 이름으로 대충 자리를 잡아준다(서브·메인이 들어가면 메인 다음).
+ * group 0 = 밥~서브메인(그날의 중심), 1 = 일반 반찬, 2 = 간식 — 0과 1 사이를 한 줄 띄워 구분한다. */
+const PLAN_CAT_RANK = {'밥':10,'면':11,'국':20,'메인':30,'서브메인찬':40,'서브메인':40,'반찬':60,'후식':85,'간식':90};
+function planCatRank(cat){
+  const c = String(cat||'');
+  if(PLAN_CAT_RANK[c]!=null) return PLAN_CAT_RANK[c];
+  if(c.indexOf('메인')>=0) return 45;   // 사용자가 만든 '서브메인○○' 계열
+  return 55;                            // 그 밖의 사용자 분류는 일반 반찬 앞
+}
+function planCatGroup(cat){
+  const r = planCatRank(cat);
+  if(r >= 80) return 2;          // 후식·간식 — 식사 뒤에 따로
+  return r <= 50 ? 0 : 1;        // 0: 밥~서브메인(중심) / 1: 일반 반찬
+}
+/** {cat, name} 목록을 정해진 순서로 세워 화면·인쇄 공통 마크업으로 바꾼다.
+ *  영업부 식단과 용역부 도시락이 같은 모양으로 보이도록 이 함수 하나를 함께 쓴다.
+ *  묶음(중심 식사 / 반찬 / 후식·간식)이 바뀌는 첫 줄에 여백을 준다. */
+/** 그날의 줄들을 {분류,이름}에서 만들어 낸다. 분류 이름은 찍지 않고 순서와 강조로만 구분한다.
+ *  강조(main)는 그날에 하나만 붙인다 — '메인'이 있으면 그것, 없으면 '면'(면데이의 주메뉴). */
+function catLinesRows(items){
+  const rows = (items||[])
+    .filter(it=>it && it.name)
+    .map(it=>{
+      const cat = it.cat || '';
+      return {cat, name:it.name, rank:planCatRank(cat), group:planCatGroup(cat), main:false};
+    })
+    .sort((a,b)=> a.rank-b.rank || a.name.localeCompare(b.name,'ko'));
+  let star = rows.find(r=>r.rank===30);          // 메인
+  if(!star) star = rows.find(r=>r.rank===11);    // 메인이 없으면 면을 그날의 주메뉴로 본다
+  if(star) star.main = true;
+  return rows;
+}
+function catLinesHtml(items, cls){
+  const rows = catLinesRows(items);
+  let prev = null;
+  return rows.map(l=>{
+    const gap = (prev!==null && l.group!==prev) ? ' gap' : '';
+    prev = l.group;
+    return `<div class="${cls}${l.main?' main':''}${gap}">${esc(l.name)}</div>`;
+  }).join('');
+}
+/** 인쇄용 주간 카드에 쓰는 줄 — 위와 같은 순서·강조에 음식 아이콘만 덧붙인다. */
+function catIconLinesHtml(items){
+  const rows = catLinesRows(items);
+  let prev = null;
+  return rows.map(l=>{
+    const gap = (prev!==null && l.group!==prev) ? ' gap' : '';
+    prev = l.group;
+    return `<div class="pw-line${l.main?' main':''}${gap}">${foodIconSvg(l.cat)}<span class="nm">${esc(l.name)}</span></div>`;
+  }).join('');
+}
+/** 그날 영업부 식단을 줄로 세운다. */
+function planMenuLines(day){
+  if(!day || !day.lunch || day.lunch.type!=='cook') return [];
+  return (day.lunch.slots||[])
+    .filter(sl=>sl.id)
+    .map(sl=>{ const m = menuById(sl.id); return m ? {cat: sl.cat || m.category || '', name:m.name} : null; })
+    .filter(Boolean);
+}
+function planLinesHtml(day, cls){ return catLinesHtml(planMenuLines(day), cls); }
+/** 그 날짜 용역부 도시락에 실제로 담기는 것들을 {분류,이름}으로 모은다(기본 식사 + 후식 + 간식). */
+function serviceMealLines(dateKey){
+  const rec = serviceMealFor(dateKey);
+  const out = [];
+  if(rec.useSourceMeal!==false){
+    serviceBaseMealLines(rec.sourceMealDate).forEach(l=>out.push({cat:l.cat, name:l.name}));
+  }
+  const names = ids => (ids||[]).map(serviceMenuById).filter(sm=>sm && sm.isActive!==false).map(sm=>sm.name);
+  names(rec.dessertIds).forEach(nm=>out.push({cat:'후식', name:nm}));
+  names(rec.snackIds).forEach(nm=>out.push({cat:'간식', name:nm}));
+  return out;
+}
+
 /** 요일 테마 기준 기본 슬롯 구성 (밥·국·메인·반찬, 면데이는 면·반찬) */
 function defaultSlots(theme){ return slotsForTheme(theme).map(cat=>({cat, id:''})); }
 function defaultDay(weekday,key){
@@ -2937,98 +3341,226 @@ async function removeMenu(id){
 function setMenuFilter(field,val){ menuFilter[field]=val; render(); }
 
 function renderMenus(){
+  /* 레이아웃: 상단 가로 입력란(메뉴 추가·수정) → 검색·필터 → 분류별 세로 열(칸반).
+     예전에는 왼쪽 절반이 편집기, 오른쪽이 표였는데 편집 중이 아닐 때 왼쪽이 통째로 비어 있었다. */
   const editorPane = menuDraft ? `
-    <div class="card">
-      <div class="section-title">${menuDraft.id?'메뉴 수정':'새 메뉴 추가'}</div>
-      <div class="stack">
-        <label class="field">메뉴명<input type="text" value="${esc(menuDraft.name)}" onchange="draftSetField('name',this.value)" placeholder="예: 제육볶음"></label>
-        <div class="inline-form">
-          <label class="field">분류<select onchange="draftCategoryChange(this.value)">${Object.keys(CATS).map(c=>`<option value="${esc(c)}" ${menuDraft.category===c?'selected':''}>${esc(c)}</option>`).join('')}<option value="__add_cat__">+ 새 분류 추가…</option></select></label>
-          <label class="field">테마<select onchange="draftThemeChange(this.value)">${THEMES.filter(t=>t!=='포케볼데이').map(t=>`<option value="${esc(t)}" ${menuDraft.theme===t?'selected':''}>${esc(t)}</option>`).join('')}<option value="__add_theme__">+ 새 테마 추가…</option></select></label>
-        </div>
-        <label class="field">알레르기 표시 (쉼표로 구분)<input type="text" value="${esc(menuDraft.allergy.join(', '))}" onchange="draftSetAllergy(this.value)" placeholder="예: 대두, 밀"></label>
-        <div>
-          <div class="section-title" style="margin-bottom:6px;">사용 재료 <span class="hint">재료·상품 관리에 등록된 재료를 선택하면 실제 구매가로 자동 계산됩니다. 없으면 이름·단가를 직접 입력하세요.</span></div>
-          <div id="ingList" class="stack" style="gap:8px;">
-            ${menuDraft.ingredients.map((ing,idx)=>{
-              const linked = !!ing.ingId;
-              const regOptions = S.ingredients.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(r=>`<option value="${r.id}" ${ing.ingId===r.id?'selected':''}>${esc(r.name)} (${esc(r.productName||r.baseUnit)})</option>`).join('');
-              return `
-              <div class="card tight" style="background:var(--surface-2);">
-                <div class="ing-link-row">
-                  <select onchange="draftLinkIngredient(${idx},this.value)">
-                    <option value="">— 직접 입력 —</option>
-                    ${regOptions}
-                  </select>
-                  <input type="text" placeholder="재료명" value="${esc(ing.n)}" ${linked?'disabled':''} onchange="draftSetIngredient(${idx},'n',this.value)">
-                  <span class="chip ${linked?'green':'gray'}" style="font-size:10px;">${linked?'🔗 연결됨':'직접입력'}</span>
-                  <button class="iconbtn" onclick="draftRemoveIngredient(${idx})">✕</button>
-                </div>
-                <div class="ing-row" style="grid-template-columns:.7fr .7fr 1fr .9fr .6fr;">
-                  <input type="number" placeholder="수량" value="${ing.q}" onchange="draftSetIngredient(${idx},'q',this.value)">
-                  ${linked
-                    ? `<input type="text" value="${esc(ing.u)}" disabled>`
-                    : `<select onchange="draftSetIngredient(${idx},'u',this.value)">${UNITS.map(u=>`<option ${ing.u===u?'selected':''}>${u}</option>`).join('')}</select>`}
-                  <select onchange="draftSetIngredient(${idx},'calcMode',this.value)">
-                    <option value="perPerson" ${ (ing.calcMode||'perPerson')==='perPerson'?'selected':''}>인원비례</option>
-                    <option value="fixed" ${ing.calcMode==='fixed'?'selected':''}>고정수량</option>
-                  </select>
-                  ${(ing.calcMode||'perPerson')==='perPerson'
-                    ? `<input type="number" min="1" placeholder="기준인원" value="${ing.refHeadcount||1}" onchange="draftSetIngredient(${idx},'refHeadcount',this.value)" title="이 수량은 몇 인분 기준인지">`
-                    : `<span class="muted" style="font-size:11px;align-self:center;">전체 1회 고정</span>`}
-                  <input type="number" placeholder="단가" value="${ing.p}" ${linked?'disabled':''} onchange="draftSetIngredient(${idx},'p',this.value)">
-                </div>
-                <p class="muted" style="font-size:10.5px;margin:4px 0 0;">${linked ? `단가는 재료·상품 관리 기준(${fmtWon(ingRowUnitCost(ing))}/${esc(ing.u)})으로 자동 계산됩니다.` : ((ing.u==='g'||ing.u==='ml') ? '원/kg·L 단가 기준(예: 1kg당 가격)' : `${esc(ing.u)} 1단위당 가격`)}</p>
-              </div>`;
-            }).join('')}
-          </div>
-          <button class="btn small" onclick="draftAddIngredient()" style="margin-top:8px;">+ 재료 추가</button>
-        </div>
-        <div class="flex-between">
-          <span class="muted">1인 예상 원가: <b class="num" id="draftCostPreview">${fmtWon(menuCost(menuDraft))}</b></span>
-          <div class="chip-row">
-            <button class="btn ghost" onclick="cancelMenuDraft()">취소</button>
-            <button class="btn primary" onclick="saveMenuDraft()">저장</button>
-          </div>
-        </div>
+    <div class="card mk-top">
+      <div class="mk-head">
+        <span class="mk-title">${menuDraft.id?'✎ 메뉴 수정':'＋ 새 메뉴 추가'}</span>
+        <span class="muted" style="font-size:11.5px;">메뉴명·분류를 정하고 사용 재료를 줄로 추가합니다</span>
+      </div>
+      <div class="mk-row r1">
+        <label><span class="mk-lab">메뉴명</span><input type="text" value="${esc(menuDraft.name)}" onchange="draftSetField('name',this.value)" placeholder="예: 제육볶음"></label>
+        <label><span class="mk-lab">분류</span><select onchange="draftCategoryChange(this.value)">${Object.keys(CATS).map(c=>`<option value="${esc(c)}" ${menuDraft.category===c?'selected':''}>${esc(c)}</option>`).join('')}<option value="__add_cat__">+ 새 분류 추가…</option></select></label>
+        <label><span class="mk-lab">테마</span><select onchange="draftThemeChange(this.value)">${THEMES.filter(t=>t!=='포케볼데이').map(t=>`<option value="${esc(t)}" ${menuDraft.theme===t?'selected':''}>${esc(t)}</option>`).join('')}<option value="__add_theme__">+ 새 테마 추가…</option></select></label>
+        <label><span class="mk-lab">알레르기 (쉼표로 구분)</span><input type="text" value="${esc(menuDraft.allergy.join(', '))}" onchange="draftSetAllergy(this.value)" placeholder="예: 대두, 밀"></label>
+      </div>
+      <div class="mk-ing">
+        <div class="mk-lab" style="margin-bottom:6px;">사용 재료 <span class="hint" style="font-weight:400;">재료·상품 관리에 등록된 것을 고르면 실제 구매가로 자동 계산됩니다</span></div>
+        ${menuDraft.ingredients.length ? `<div class="mk-inghead">
+          <span>재료</span><span>수량</span><span>단위</span><span>계산</span><span>기준인원</span><span>단가</span><span></span>
+        </div>` : ''}
+        ${menuDraft.ingredients.map((ing,idx)=>{
+          const linked = !!ing.ingId;
+          const regOptions = S.ingredients.slice().sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(r=>`<option value="${r.id}" ${ing.ingId===r.id?'selected':''}>${esc(r.name)} (${esc(r.productName||r.baseUnit)})</option>`).join('');
+          return `<div class="mk-ingrow">
+            <span class="mk-ingpick">
+              <select onchange="draftLinkIngredient(${idx},this.value)"><option value="">— 직접 입력 —</option>${regOptions}</select>
+              ${linked ? '' : `<input type="text" placeholder="재료명" value="${esc(ing.n)}" onchange="draftSetIngredient(${idx},'n',this.value)">`}
+            </span>
+            <input type="number" placeholder="수량" value="${ing.q}" onchange="draftSetIngredient(${idx},'q',this.value)">
+            ${linked ? `<input type="text" value="${esc(ing.u)}" disabled>`
+                     : `<select onchange="draftSetIngredient(${idx},'u',this.value)">${UNITS.map(u=>`<option ${ing.u===u?'selected':''}>${u}</option>`).join('')}</select>`}
+            <select onchange="draftSetIngredient(${idx},'calcMode',this.value)">
+              <option value="perPerson" ${(ing.calcMode||'perPerson')==='perPerson'?'selected':''}>인원비례</option>
+              <option value="fixed" ${ing.calcMode==='fixed'?'selected':''}>고정수량</option>
+            </select>
+            ${(ing.calcMode||'perPerson')==='perPerson'
+              ? `<input type="number" min="1" value="${ing.refHeadcount||1}" onchange="draftSetIngredient(${idx},'refHeadcount',this.value)" title="이 수량은 몇 인분 기준인지">`
+              : `<span class="muted" style="font-size:10.5px;align-self:center;">1회 고정</span>`}
+            <input type="number" placeholder="단가" value="${linked?Math.round(ingRowUnitCost(ing)):ing.p}" ${linked?'disabled':''} onchange="draftSetIngredient(${idx},'p',this.value)"
+                   title="${linked?'재료·상품 관리 기준 단가':((ing.u==='g'||ing.u==='ml')?'원/kg·L 단가':'1단위당 가격')}">
+            <button class="iconbtn" onclick="draftRemoveIngredient(${idx})">✕</button>
+          </div>`;
+        }).join('')}
+        <button class="btn small" onclick="draftAddIngredient()" style="margin-top:8px;">＋ 재료 추가</button>
+      </div>
+      <div class="mk-foot">
+        <span class="muted">1인 예상 원가 <b class="num" id="draftCostPreview" style="color:var(--ink);font-size:14.5px;">${fmtWon(menuCost(menuDraft))}</b></span>
+        <span class="chip-row">
+          <button class="btn ghost" onclick="cancelMenuDraft()">취소</button>
+          <button class="btn primary" onclick="saveMenuDraft()">저장</button>
+        </span>
       </div>
     </div>` : `
-    <div class="card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:160px;">
-      <p class="muted" style="text-align:center;">등록된 메뉴에서 새로운 메뉴를 추가하면<br>식단표와 랜덤 생성에 바로 사용할 수 있어요.</p>
-      <button class="btn primary" onclick="newMenuDraft()">+ 원하는 메뉴 추가</button>
+    <div class="card mk-top mk-idle">
+      <div>
+        <div class="mk-title">메뉴 등록</div>
+        <p class="muted" style="font-size:11.8px;margin:3px 0 0;">등록한 메뉴는 식단표와 랜덤 생성에 바로 쓰입니다. 총 ${S.menus.length}개 등록됨</p>
+      </div>
+      <button class="btn primary" onclick="newMenuDraft()">＋ 원하는 메뉴 추가</button>
     </div>`;
 
   const filtered = S.menus.filter(m=>
     (!menuFilter.cat || m.category===menuFilter.cat) &&
     (!menuFilter.theme || m.theme===menuFilter.theme) &&
     (!menuFilter.q || m.name.includes(menuFilter.q))
-  ).sort((a,b)=>a.category.localeCompare(b.category)||a.name.localeCompare(b.name));
+  );
+  // 분류별 열 — 분류 목록 순서를 따르고, 목록에 없는(삭제된) 분류는 맨 뒤에 모은다.
+  const catOrder = Object.keys(CATS);
+  const byCat = {};
+  filtered.forEach(m=>{ (byCat[m.category] = byCat[m.category] || []).push(m); });
+  const extraCats = Object.keys(byCat).filter(c=>!catOrder.includes(c)).sort();
+  const cols = orderedBoardCols('menus', [...catOrder, ...extraCats].filter(c=>byCat[c] && byCat[c].length));
+  const colsJson = encodeURIComponent(JSON.stringify(cols));
 
-  const rows = filtered.map(m=>`
-    <tr>
-      <td>${esc(m.name)}</td>
-      <td><span class="badge-cat">${m.category}</span></td>
-      <td><span class="chip ${THEME_COLOR[m.theme]||'gray'}" style="font-size:10.5px;">${esc(m.theme)}</span></td>
-      <td class="wrap muted" style="font-size:11.5px;">${m.allergy&&m.allergy.length?m.allergy.join(', '):'-'}</td>
-      <td class="num">${fmtWon(menuCost(m))}</td>
-      <td><button class="btn small ghost" onclick="editMenuDraft('${m.id}')">수정</button> <button class="btn small danger ghost" onclick="removeMenu('${m.id}')">삭제</button></td>
-    </tr>`).join('') || `<tr><td colspan="6" class="empty">조건에 맞는 메뉴가 없습니다</td></tr>`;
+  const board = cols.length ? cols.map(c=>{
+    const items = byCat[c].slice().sort((a,b)=>a.name.localeCompare(b.name,'ko'));
+    return `<div class="mk-col" ondragover="boardDragOver(event,'menus','${escJsAttr(c)}')" ondragleave="boardDragLeave(event)" ondrop="boardDrop(event,'menus','${escJsAttr(c)}','${colsJson}')">
+      <div class="mk-colhead" draggable="true" title="끌어서 열 순서를 바꿀 수 있습니다"
+           ondragstart="colDragStart(event,'menus','${escJsAttr(c)}')" ondragend="boardDragEnd()">
+        <span class="grip">⠿</span><b>${esc(catLabel(c))}</b><span class="n">${items.length}개</span></div>
+      <div class="mk-colbody">
+        ${items.map(m=>`<div class="mk-item" draggable="true" title="끌어서 다른 분류로 옮길 수 있습니다"
+             ondragstart="itemDragStart(event,'menus','${m.id}','${escJsAttr(c)}')" ondragend="boardDragEnd()">
+          <div class="nm">${esc(m.name)}</div>
+          <div class="mt">
+            <span class="chip ${THEME_COLOR[m.theme]||'gray'}" style="font-size:10px;padding:2px 7px;">${esc(m.theme)}</span>
+            <span class="num" style="font-size:12px;font-weight:600;">${fmtWon(menuCost(m))}</span>
+          </div>
+          <div class="mt" style="margin-top:5px;">
+            <span class="muted" style="font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${m.allergy&&m.allergy.length?esc(m.allergy.join(', ')):'—'}</span>
+            <span class="acts">
+              <button class="btn small ghost" onclick="editMenuDraft('${m.id}')">수정</button>
+              <button class="btn small ghost danger" onclick="removeMenu('${m.id}')">삭제</button>
+            </span>
+          </div>
+        </div>`).join('')}
+        <button class="btn small ghost" style="align-self:flex-start;" onclick="newMenuDraftIn('${escJsAttr(c)}')">＋ ${esc(catLabel(c))} 추가</button>
+      </div>
+    </div>`;
+  }).join('') : `<div class="empty" style="flex:1;">조건에 맞는 메뉴가 없습니다</div>`;
 
   return `
-  <div class="menu-editor">
-    <div>${editorPane}</div>
-    <div>
-      <div class="filterbar">
-        <input type="text" placeholder="메뉴 검색" value="${esc(menuFilter.q)}" oninput="setMenuFilter('q',this.value)">
-        <select onchange="setMenuFilter('cat',this.value)"><option value="">전체 분류</option>${Object.keys(CATS).map(c=>`<option ${menuFilter.cat===c?'selected':''}>${esc(c)}</option>`).join('')}</select>
-        <select onchange="setMenuFilter('theme',this.value)"><option value="">전체 테마</option>${THEMES.filter(t=>t!=='전체'&&t!=='포케볼데이').map(t=>`<option ${menuFilter.theme===t?'selected':''}>${esc(t)}</option>`).join('')}</select>
-      </div>
-      <div class="twrap"><table><thead><tr><th>메뉴명</th><th>분류</th><th>테마</th><th class="wrap">알레르기</th><th class="num">1인 원가</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
-      <p class="muted" style="font-size:11.5px;margin-top:8px;">총 ${S.menus.length}개 메뉴 등록됨</p>
-    </div>
+  ${editorPane}
+  <div class="filterbar" style="margin-bottom:12px;">
+    <input type="text" placeholder="메뉴 검색" value="${esc(menuFilter.q)}" oninput="setMenuFilter('q',this.value)">
+    <select onchange="setMenuFilter('cat',this.value)"><option value="">전체 분류</option>${Object.keys(CATS).map(c=>`<option ${menuFilter.cat===c?'selected':''}>${esc(c)}</option>`).join('')}</select>
+    <select onchange="setMenuFilter('theme',this.value)"><option value="">전체 테마</option>${THEMES.filter(t=>t!=='전체'&&t!=='포케볼데이').map(t=>`<option ${menuFilter.theme===t?'selected':''}>${esc(t)}</option>`).join('')}</select>
+    <span class="muted" style="font-size:11.5px;align-self:center;">${filtered.length}개 표시 · 전체 ${S.menus.length}개</span>
+    <span class="board-hint">⠿ 열 제목을 끌면 순서가, 카드를 끌면 분류가 바뀝니다 · 배경을 끌면 좌우로 움직입니다</span>
+    <button class="btn small ghost" onclick="resetBoardOrder('menus')" title="열 순서를 기본값으로">열 순서 초기화</button>
   </div>
+  <div class="mk-board">${board}</div>
   ${renderMenuSetsCard()}
   ${renderServiceMenusCard()}`;
+}
+/* ===================== 분류별 열 보드(메뉴·재료 공통) =====================
+ * 세 가지 조작을 제공한다.
+ *   1) 배경(열과 열 사이, 빈 곳)을 잡아끌면 보드가 좌우로 움직인다 — 아래 가로 스크롤바와 함께 쓴다.
+ *   2) 열 제목을 끌어 놓으면 열 순서가 바뀐다. 순서는 이 브라우저에만 기억된다(사람마다 다르게 볼 수 있음).
+ *   3) 카드를 다른 열에 떨어뜨리면 그 항목의 분류가 바뀌어 저장된다.
+ * 드래그는 HTML 표준 방식(draggable)을 쓰고, 끝나면 render()로 화면을 다시 그린다. */
+const BOARD_ORDER_KEY = 'meal_app_board_order';
+function boardOrderMap(){
+  try{ const o = JSON.parse(localStorage.getItem(BOARD_ORDER_KEY)||'{}'); return (o && typeof o==='object') ? o : {}; }
+  catch(e){ return {}; }
+}
+function saveBoardOrder(board, arr){
+  try{ const o = boardOrderMap(); o[board] = arr; localStorage.setItem(BOARD_ORDER_KEY, JSON.stringify(o)); }catch(e){}
+}
+/** 저장된 순서를 먼저 깔고, 저장 이후에 새로 생긴 분류는 원래 순서대로 뒤에 붙인다. */
+function orderedBoardCols(board, cols){
+  const saved = boardOrderMap()[board];
+  if(!Array.isArray(saved) || !saved.length) return cols;
+  const head = saved.filter(c=>cols.includes(c));
+  return [...head, ...cols.filter(c=>!head.includes(c))];
+}
+function resetBoardOrder(board){ saveBoardOrder(board, []); render(); }
+
+let boardDrag = null;   // {kind:'col'|'item', board, from, id}
+function colDragStart(ev, board, cat){
+  boardDrag = {kind:'col', board, from:cat};
+  try{ ev.dataTransfer.effectAllowed='move'; ev.dataTransfer.setData('text/plain', cat); }catch(e){}
+}
+function itemDragStart(ev, board, id, cat){
+  boardDrag = {kind:'item', board, from:cat, id};
+  try{ ev.dataTransfer.effectAllowed='move'; ev.dataTransfer.setData('text/plain', id); }catch(e){}
+  ev.stopPropagation();
+}
+function boardDragOver(ev, board, cat){
+  if(!boardDrag || boardDrag.board!==board) return;
+  if(boardDrag.kind==='item' && boardDrag.from===cat) return;   // 제자리면 표시하지 않음
+  if(boardDrag.kind==='col'  && boardDrag.from===cat) return;
+  ev.preventDefault();
+  try{ ev.dataTransfer.dropEffect='move'; }catch(e){}
+  const col = ev.currentTarget;
+  document.querySelectorAll('.mk-col.dropping').forEach(c=>{ if(c!==col) c.classList.remove('dropping'); });
+  col.classList.add('dropping');
+}
+function boardDragLeave(ev){ ev.currentTarget.classList.remove('dropping'); }
+function boardDragEnd(){
+  boardDrag = null;
+  document.querySelectorAll('.mk-col.dropping').forEach(c=>c.classList.remove('dropping'));
+  document.querySelectorAll('.mk-col.dragging,.mk-item.dragging').forEach(c=>c.classList.remove('dragging'));
+}
+async function boardDrop(ev, board, cat, allColsJson){
+  ev.preventDefault();
+  const d = boardDrag;
+  boardDragEnd();
+  if(!d || d.board!==board) return;
+  if(d.kind==='col'){
+    if(d.from===cat) return;
+    let cols;
+    try{ cols = JSON.parse(decodeURIComponent(allColsJson)); }catch(e){ return; }
+    cols = orderedBoardCols(board, cols);
+    const i = cols.indexOf(d.from), j = cols.indexOf(cat);
+    if(i<0 || j<0) return;
+    cols.splice(i,1);
+    cols.splice(j,0,d.from);
+    saveBoardOrder(board, cols);
+    render();
+    return;
+  }
+  // 카드를 다른 열로 — 그 항목의 분류를 바꿔 저장한다
+  if(d.from===cat) return;
+  if(board==='menus'){
+    if(!CATS[cat]) return;
+    const m = menuById(d.id); if(!m) return;
+    await updateMenuRec(d.id, {category:cat});
+  }else{
+    if(!ING_CATS.includes(cat)) return;
+    const i = ingredientById(d.id); if(!i) return;
+    await updateIngredientRec(d.id, {category:cat});
+  }
+  render();
+}
+/** 보드 배경을 잡아끌어 좌우로 움직인다. 화면을 다시 그려도 유지되도록 문서에 한 번만 건다. */
+let boardPan = null;
+function setupBoardPan(){
+  if(setupBoardPan.done) return; setupBoardPan.done = true;
+  document.addEventListener('mousedown', e=>{
+    if(e.button!==0 || !e.target.closest) return;
+    const board = e.target.closest('.mk-board');
+    if(!board) return;
+    if(e.target.closest('button,a,input,select,textarea,label,.mk-item,.mk-colhead')) return;
+    boardPan = {board, x:e.clientX, left:board.scrollLeft};
+    board.classList.add('panning');
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove', e=>{
+    if(!boardPan) return;
+    boardPan.board.scrollLeft = boardPan.left - (e.clientX - boardPan.x);
+  });
+  const stop = ()=>{ if(boardPan){ boardPan.board.classList.remove('panning'); boardPan = null; } };
+  document.addEventListener('mouseup', stop);
+  document.addEventListener('mouseleave', stop);
+}
+
+/** 분류 열의 "＋ 추가" — 그 분류로 미리 맞춰진 빈 양식을 연다. */
+function newMenuDraftIn(cat){
+  newMenuDraft();
+  if(menuDraft && CATS[cat]){ menuDraft.category = cat; render(); }
 }
 
 /* ===================== 🛒 재료·상품 관리 =====================
@@ -3093,84 +3625,114 @@ async function removeCustomIngCategory(name){
 }
 
 function renderIngredients(){
+  /* 메뉴 관리와 같은 구조 — 위: 가로 입력란 / 아래: 재료 분류(채소·축산·수산…)마다 세로 열 하나. */
   const unitCost = (ingDraft && ingDraft.purchaseQty) ? (ingDraft.purchasePrice||0)/ingDraft.purchaseQty : 0;
   const editorPane = ingDraft ? `
-    <div class="card">
-      <div class="section-title">${ingDraft.id?'재료·상품 수정':'새 재료·상품 등록'}</div>
-      <div class="stack">
-        <label class="field">재료명 <span class="muted" style="font-weight:400;">(메뉴에서 이 이름으로 검색·선택됩니다)</span>
-          <input type="text" value="${esc(ingDraft.name)}" onchange="ingDraftSetField('name',this.value)" placeholder="예: 돼지고기, 멸치볶음">
-        </label>
-        <div class="inline-form">
-          <label class="field">분류<select onchange="ingDraftCategoryChange(this.value)">${ING_CATS.map(c=>`<option value="${esc(c)}" ${ingDraft.category===c?'selected':''}>${esc(c)}</option>`).join('')}<option value="__add_ing_cat__">+ 새 분류 추가…</option></select></label>
-          <label class="field">기본단위 <span class="muted" style="font-weight:400;">(메뉴 재료 수량의 단위)</span>
-            <select onchange="ingDraftSetField('baseUnit',this.value)">${UNITS.map(u=>`<option ${ingDraft.baseUnit===u?'selected':''}>${u}</option>`).join('')}</select>
-          </label>
+    <div class="card mk-top">
+      <div class="mk-head">
+        <span class="mk-title">${ingDraft.id?'✎ 재료·상품 수정':'＋ 새 재료·상품 등록'}</span>
+        <span class="muted" style="font-size:11.5px;">이 재료를 실제로 살 때의 상품명·단위·가격을 적습니다</span>
+      </div>
+      <div class="mk-row ing-r1">
+        <label><span class="mk-lab">재료명 <span style="font-weight:400;">(메뉴에서 이 이름으로 고릅니다)</span></span>
+          <input type="text" value="${esc(ingDraft.name)}" onchange="ingDraftSetField('name',this.value)" placeholder="예: 돼지고기, 멸치볶음"></label>
+        <label><span class="mk-lab">분류</span><select onchange="ingDraftCategoryChange(this.value)">${ING_CATS.map(c=>`<option value="${esc(c)}" ${ingDraft.category===c?'selected':''}>${esc(c)}</option>`).join('')}<option value="__add_ing_cat__">+ 새 분류 추가…</option></select></label>
+        <label><span class="mk-lab">기본단위 <span style="font-weight:400;">(메뉴 수량의 단위)</span></span>
+          <select onchange="ingDraftSetField('baseUnit',this.value)">${UNITS.map(u=>`<option ${ingDraft.baseUnit===u?'selected':''}>${u}</option>`).join('')}</select></label>
+        <label><span class="mk-lab">주문처</span><select onchange="ingDraftSetField('supplierId',this.value)"><option value="">— 선택 안함 —</option>${S.suppliers.map(x=>`<option value="${x.id}" ${ingDraft.supplierId===x.id?'selected':''}>${esc(x.name)}</option>`).join('')}</select></label>
+      </div>
+      <div class="mk-ing">
+        <div class="mk-lab" style="margin-bottom:6px;">실제 구매상품 <span class="hint" style="font-weight:400;">완제품도 여기 등록합니다 — 예: 멸치볶음 완제품 2kg</span></div>
+        <div class="mk-row ing-r2">
+          <label><span class="mk-lab">구매상품명</span><input type="text" value="${esc(ingDraft.productName)}" onchange="ingDraftSetField('productName',this.value)" placeholder="예: 국내산 돼지 앞다리살 10kg 박스"></label>
+          <label><span class="mk-lab">구매단위명</span><input type="text" value="${esc(ingDraft.purchaseUnit)}" onchange="ingDraftSetField('purchaseUnit',this.value)" placeholder="예: 박스(10kg)"></label>
+          <label><span class="mk-lab">구매수량 <span style="font-weight:400;">(10kg→10000)</span></span><input type="number" value="${ingDraft.purchaseQty}" onchange="ingDraftSetField('purchaseQty',this.value)"></label>
+          <label><span class="mk-lab">구매가격(원)</span><input type="number" value="${ingDraft.purchasePrice}" onchange="ingDraftSetField('purchasePrice',this.value)"></label>
         </div>
-        <div class="hr"></div>
-        <div class="section-title" style="margin-bottom:2px;">실제 구매상품 <span class="hint">이 재료를 실제로 살 때의 상품명·단위·가격</span></div>
-        <label class="field">구매상품명 <span class="muted" style="font-weight:400;">(완제품도 여기 등록 — 예: 멸치볶음 완제품 2kg)</span>
-          <input type="text" value="${esc(ingDraft.productName)}" onchange="ingDraftSetField('productName',this.value)" placeholder="예: 국내산 돼지 앞다리살 10kg 박스">
-        </label>
-        <div class="inline-form">
-          <label class="field">구매단위명<input type="text" style="width:110px;" value="${esc(ingDraft.purchaseUnit)}" onchange="ingDraftSetField('purchaseUnit',this.value)" placeholder="예: 박스(10kg)"></label>
-          <label class="field">구매수량 <span class="muted" style="font-weight:400;">(기본단위 환산, 예: 10kg→10000)</span><input type="number" style="width:120px;" value="${ingDraft.purchaseQty}" onchange="ingDraftSetField('purchaseQty',this.value)"></label>
-          <label class="field">구매가격(원)<input type="number" style="width:120px;" value="${ingDraft.purchasePrice}" onchange="ingDraftSetField('purchasePrice',this.value)"></label>
-        </div>
-        <div class="inline-form">
-          <label class="field">주문처<select onchange="ingDraftSetField('supplierId',this.value)"><option value="">— 선택 안함 —</option>${S.suppliers.map(s=>`<option value="${s.id}" ${ingDraft.supplierId===s.id?'selected':''}>${esc(s.name)}</option>`).join('')}</select></label>
-          <label class="field" style="flex:1;min-width:180px;">상품 URL<input type="text" value="${esc(ingDraft.url)}" onchange="ingDraftSetField('url',this.value)" placeholder="https://..."></label>
-        </div>
-        <label class="field">비고<input type="text" value="${esc(ingDraft.memo||'')}" onchange="ingDraftSetField('memo',this.value)" placeholder="선택 입력"></label>
-        <div class="flex-between">
-          <span class="muted">환산 단가: <b class="num">${fmtWon(unitCost)}</b> / ${esc(ingDraft.baseUnit)}</span>
-          <div class="chip-row">
-            <button class="btn ghost" onclick="cancelIngDraft()">취소</button>
-            <button class="btn primary" onclick="saveIngDraft()">저장</button>
-          </div>
+        <div class="mk-row ing-r3">
+          <label><span class="mk-lab">상품 URL</span><input type="text" value="${esc(ingDraft.url)}" onchange="ingDraftSetField('url',this.value)" placeholder="https://..."></label>
+          <label><span class="mk-lab">비고</span><input type="text" value="${esc(ingDraft.memo||'')}" onchange="ingDraftSetField('memo',this.value)" placeholder="선택 입력"></label>
         </div>
       </div>
+      <div class="mk-foot">
+        <span class="muted">환산 단가 <b class="num" style="color:var(--ink);font-size:14.5px;">${fmtWon(unitCost)}</b> / ${esc(ingDraft.baseUnit)}</span>
+        <span class="chip-row">
+          <button class="btn ghost" onclick="cancelIngDraft()">취소</button>
+          <button class="btn primary" onclick="saveIngDraft()">저장</button>
+        </span>
+      </div>
     </div>` : `
-    <div class="card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:160px;">
-      <p class="muted" style="text-align:center;">메뉴에서 쓰는 재료가 실제로 어떤 상품·단위·가격으로<br>구매되는지 등록해두면 발주수량이 자동으로 정확히 계산돼요.</p>
-      <button class="btn primary" onclick="newIngDraft()">+ 재료·상품 등록</button>
+    <div class="card mk-top mk-idle">
+      <div>
+        <div class="mk-title">재료·상품 등록</div>
+        <p class="muted" style="font-size:11.8px;margin:3px 0 0;">실제 구매 단위·가격을 등록해두면 발주수량과 원가가 자동으로 정확해집니다. 총 ${S.ingredients.length}개 등록됨</p>
+      </div>
+      <button class="btn primary" onclick="newIngDraft()">＋ 재료·상품 등록</button>
     </div>`;
 
   const filtered = S.ingredients.filter(i=>
     (!ingFilter.cat || i.category===ingFilter.cat) &&
     (!ingFilter.q || i.name.includes(ingFilter.q) || (i.productName||'').includes(ingFilter.q))
-  ).sort((a,b)=>a.category.localeCompare(b.category)||a.name.localeCompare(b.name));
+  );
+  const byCat = {};
+  filtered.forEach(i=>{ (byCat[i.category] = byCat[i.category] || []).push(i); });
+  const extraCats = Object.keys(byCat).filter(c=>!ING_CATS.includes(c)).sort();
+  const cols = orderedBoardCols('ingredients', [...ING_CATS, ...extraCats].filter(c=>byCat[c] && byCat[c].length));
+  const colsJson = encodeURIComponent(JSON.stringify(cols));
 
-  const rows = filtered.map(i=>{
-    const usedCount = S.menus.filter(m=>(m.ingredients||[]).some(ing=>ing.ingId===i.id)).length;
-    const sup = S.suppliers.find(s=>s.id===i.supplierId);
-    const unitPrice = i.purchaseQty ? (i.purchasePrice||0)/i.purchaseQty : 0;
-    return `<tr>
-      <td>${esc(i.name)}</td>
-      <td><span class="badge-ingcat">${esc(i.category)}</span></td>
-      <td class="wrap muted" style="font-size:11.5px;">${esc(i.productName||'-')}</td>
-      <td class="wrap">${esc(i.purchaseUnit||'-')} <span class="muted">(${(i.purchaseQty||0).toLocaleString()}${esc(i.baseUnit)})</span></td>
-      <td class="num">${fmtWon(i.purchasePrice)}</td>
-      <td class="num muted" style="font-size:11.5px;">${fmtWon(unitPrice)}/${esc(i.baseUnit)}</td>
-      <td class="wrap">${sup?esc(sup.name):'-'}</td>
-      <td>${i.url?`<a class="linklike" href="${esc(i.url)}" target="_blank" rel="noopener">🔗 상품</a>`:'<span class="muted">-</span>'}</td>
-      <td><span class="chip gray" style="font-size:10.5px;">${usedCount}개 메뉴</span></td>
-      <td><button class="btn small ghost" onclick="editIngDraft('${i.id}')">수정</button> <button class="btn small danger ghost" onclick="deleteIngredientRec('${i.id}').then(render)">삭제</button></td>
-    </tr>`;
-  }).join('') || `<tr><td colspan="10" class="empty">등록된 재료·상품이 없습니다</td></tr>`;
+  const board = cols.length ? cols.map(c=>{
+    const items = byCat[c].slice().sort((a,b)=>a.name.localeCompare(b.name,'ko'));
+    return `<div class="mk-col ing-col" ondragover="boardDragOver(event,'ingredients','${escJsAttr(c)}')" ondragleave="boardDragLeave(event)" ondrop="boardDrop(event,'ingredients','${escJsAttr(c)}','${colsJson}')">
+      <div class="mk-colhead" draggable="true" title="끌어서 열 순서를 바꿀 수 있습니다"
+           ondragstart="colDragStart(event,'ingredients','${escJsAttr(c)}')" ondragend="boardDragEnd()">
+        <span class="grip">⠿</span><b>${esc(c)}</b><span class="n">${items.length}개</span></div>
+      <div class="mk-colbody">
+        ${items.map(i=>{
+          const usedCount = S.menus.filter(m=>(m.ingredients||[]).some(ing=>ing.ingId===i.id)).length;
+          const sup = S.suppliers.find(x=>x.id===i.supplierId);
+          const unitPrice = i.purchaseQty ? (i.purchasePrice||0)/i.purchaseQty : 0;
+          return `<div class="mk-item" draggable="true" title="끌어서 다른 분류로 옮길 수 있습니다"
+               ondragstart="itemDragStart(event,'ingredients','${i.id}','${escJsAttr(c)}')" ondragend="boardDragEnd()">
+            <div class="nm">${esc(i.name)}${i.url?` <a class="linklike" href="${esc(i.url)}" target="_blank" rel="noopener" title="상품 페이지 열기">🔗</a>`:''}</div>
+            <div class="ing-prod">${esc(i.productName||'구매상품 미등록')}</div>
+            <div class="mt">
+              <span class="muted" style="font-size:10.5px;">${esc(i.purchaseUnit||i.baseUnit)} · ${(i.purchaseQty||0).toLocaleString()}${esc(i.baseUnit)}</span>
+              <span class="num" style="font-size:12px;font-weight:600;">${fmtWon(i.purchasePrice)}</span>
+            </div>
+            <div class="mt">
+              <span class="muted" style="font-size:10.5px;">${sup?esc(sup.name):'주문처 미지정'}</span>
+              <span class="num muted" style="font-size:10.5px;">${fmtWon(unitPrice)}/${esc(i.baseUnit)}</span>
+            </div>
+            <div class="mt" style="margin-top:5px;">
+              <span class="chip ${usedCount?'green':'gray'}" style="font-size:10px;padding:2px 7px;">${usedCount}개 메뉴</span>
+              <span class="acts">
+                <button class="btn small ghost" onclick="editIngDraft('${i.id}')">수정</button>
+                <button class="btn small ghost danger" onclick="deleteIngredientRec('${i.id}').then(render)">삭제</button>
+              </span>
+            </div>
+          </div>`;
+        }).join('')}
+        <button class="btn small ghost" style="align-self:flex-start;" onclick="newIngDraftIn('${escJsAttr(c)}')">＋ ${esc(c)} 추가</button>
+      </div>
+    </div>`;
+  }).join('') : `<div class="empty" style="flex:1;">조건에 맞는 재료·상품이 없습니다</div>`;
 
   return `
-  <div class="ing-editor">
-    <div>${editorPane}</div>
-    <div>
-      <div class="filterbar">
-        <input type="text" placeholder="재료/상품 검색" value="${esc(ingFilter.q)}" oninput="setIngFilter('q',this.value)">
-        <select onchange="ingFilterCategoryChange(this.value)"><option value="">전체 분류</option>${ING_CATS.map(c=>`<option value="${esc(c)}" ${ingFilter.cat===c?'selected':''}>${esc(c)}</option>`).join('')}<option value="__add_ing_cat__">+ 새 분류 추가…</option></select>
-      </div>
-      <div class="twrap"><table><thead><tr><th>재료명</th><th>분류</th><th class="wrap">구매상품명</th><th>구매단위</th><th class="num">구매가</th><th class="num">환산단가</th><th>주문처</th><th>링크</th><th>사용중</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
-      <p class="muted" style="font-size:11.5px;margin-top:8px;">총 ${S.ingredients.length}개 재료·상품 등록됨 · 메뉴 관리에서 이 재료를 선택해 연결하세요.</p>
-    </div>
-  </div>`;
+  ${editorPane}
+  <div class="filterbar" style="margin-bottom:12px;">
+    <input type="text" placeholder="재료/상품 검색" value="${esc(ingFilter.q)}" oninput="setIngFilter('q',this.value)">
+    <select onchange="ingFilterCategoryChange(this.value)"><option value="">전체 분류</option>${ING_CATS.map(c=>`<option value="${esc(c)}" ${ingFilter.cat===c?'selected':''}>${esc(c)}</option>`).join('')}<option value="__add_ing_cat__">+ 새 분류 추가…</option></select>
+    <span class="muted" style="font-size:11.5px;align-self:center;">${filtered.length}개 표시 · 전체 ${S.ingredients.length}개</span>
+    <span class="board-hint">⠿ 열 제목을 끌면 순서가, 카드를 끌면 분류가 바뀝니다 · 배경을 끌면 좌우로 움직입니다</span>
+    <button class="btn small ghost" onclick="resetBoardOrder('ingredients')" title="열 순서를 기본값으로">열 순서 초기화</button>
+  </div>
+  <div class="mk-board">${board}</div>
+  <p class="muted" style="font-size:11.5px;">※ 메뉴 관리에서 이 재료를 선택해 연결하면 원가와 발주수량이 자동으로 계산됩니다.</p>`;
+}
+/** 분류 열의 "＋ 추가" — 그 분류로 미리 맞춰진 빈 양식을 연다. */
+function newIngDraftIn(cat){
+  newIngDraft();
+  if(ingDraft && ING_CATS.includes(cat)){ ingDraft.category = cat; render(); }
 }
 
 /* ===================== 🍱 용역부 식단 화면 =====================
@@ -3293,7 +3855,7 @@ function renderService(){
           <button class="${serviceView==='week'?'active':''}" onclick="setServiceView('week')">주간</button>
           <button class="${serviceView==='month'?'active':''}" onclick="setServiceView('month')">월간</button>
         </div>
-        ${serviceCat==='snack' ? `<button class="btn no-print" onclick="window.print()">🖨 인쇄</button>` : ''}
+        <button class="btn no-print" onclick="window.print()">🖨 인쇄</button>
         ${canViewTab('settings') ? `<button class="btn no-print" onclick="setTab('settings')">⚙ 용역부 설정</button>` : ''}
       </div>
     </div>`;
@@ -3310,7 +3872,10 @@ function renderService(){
         ? '용역부는 <b>전날 영업부 식단</b>을 도시락으로 받습니다 — 화 ← 월, 수 ← 화, 목 ← 수, 금 ← 목. <b>월요일은 사먹는 날</b>이라 도시락이 없습니다.'
         : `용역부는 <b>전날 영업부 식단</b>을 도시락으로 받습니다 — 화 ← 월, 수 ← 화, 목 ← 수, 금 ← 목. <b>월요일은 사먹는 날</b>이라 도시락이 없고, <b>영업부 금요일 식단</b>은 용역부로 연결되지 않습니다. 기본 식사는 연결된 영업부 식단을 그대로 따라가며, 이 화면에서는 용역부에게만 추가되는 후식·간식만 선택합니다. 1인 비용에는 포장용기 ${fmtWon(packagingCostPerPerson())} + 발열팩 ${fmtWon(heatingPackCostPerPerson())}이 자동으로 더해집니다.`}</p>
     </div>`;
-  return header + note + `<div class="screenonly">${serviceView==='month' ? renderServiceMonth() : renderServiceWeek()}</div>`;
+  const lbPrint = serviceView==='month'
+    ? renderLunchboxPrintMonth(monthWeekMondays(serviceMonth.y, serviceMonth.m))
+    : renderLunchboxPrintWeek(weekDates(serviceWeekMonday));
+  return header + note + `<div class="screenonly">${serviceView==='month' ? renderServiceMonth() : renderServiceWeek()}</div>` + lbPrint;
 }
 
 /* ===================== 용역부 간식표 (날짜별 기입) =====================
@@ -3429,8 +3994,8 @@ function renderServiceSnackWeek(){
       const L = snackLinkOf(it);
       const linked = L.kind !== 'free';
       const priceField = linked
-        ? `<span class="sr-auto num" title="${L.kind==='ing'?'재료·상품 관리에 등록된 구매가에서 자동 계산됩니다':'메뉴 관리의 1인 원가에서 자동 계산됩니다'}">${fmtWon(snackItemUnitPrice(it))}</span><span>자동</span>`
-        : `<input type="number" value="${it.unitPrice||0}" title="단가(원)" onchange="updateSnackItem('${key}',${idx},'unitPrice',this.value)">`;
+        ? `<span class="sr-auto num" title="${L.kind==='ing'?'재료·상품 관리에 등록된 구매가에서 자동 계산됩니다':'메뉴 관리의 1인 원가에서 자동 계산됩니다'}">${fmtWon(snackItemUnitPrice(it))}</span>`
+        : `<input type="number" value="${it.unitPrice||0}" onchange="updateSnackItem('${key}',${idx},'unitPrice',this.value)">`;
       return `
       <div class="snackrow">
         <select class="sr-pick" onchange="setSnackItemLink('${key}',${idx},this.value)">${snackLinkOptions(it)}</select>
@@ -3438,13 +4003,11 @@ function renderServiceSnackWeek(){
           ? `<div class="sr-link">${L.kind==='ing'?'재료·상품':'메뉴'} · ${esc(snackItemName(it))}</div>`
           : `<input value="${esc(it.name||'')}" class="sr-name" placeholder="간식명" onchange="updateSnackItem('${key}',${idx},'name',this.value)">`}
         <div class="sr-nums">
-          <label title="수량">수량<input type="number" value="${it.qty}" onchange="updateSnackItem('${key}',${idx},'qty',this.value)"></label>
+          <label class="sr-qty" title="수량">수량<input type="number" value="${it.qty}" onchange="updateSnackItem('${key}',${idx},'qty',this.value)"></label>
           <span class="sr-unit">${esc(snackItemUnit(it))}</span>
+          ${money(`<label class="sr-unitprice printhide" title="단가(원)">단가${priceField}</label>
+          <b class="sr-sub num printhide">${fmtWon(snackItemSubtotal(it))}</b>`)}
           <button class="iconbtn" onclick="removeSnackItem('${key}',${idx})">✕</button>
-        </div>
-        <div class="sr-price printhide">
-          <span>단가</span>${priceField}
-          <b class="sr-sub num">${fmtWon(snackItemSubtotal(it))}</b>
         </div>
       </div>`;
     }).join('');
@@ -3502,45 +4065,56 @@ function renderServiceSnackMonth(){
     <p class="muted screenonly" style="font-size:12px;margin-top:6px;">※ 달력 칸의 "+ 추가"로 이름만 먼저 넣고, 수량·단가는 주간 보기에서 다듬으면 됩니다.</p>`;
 }
 /** 인쇄용 주간 간식표 — 금액 없이 품목·수량만 */
-function renderSnackPrintWeek(dates){
-  const maxRows = Math.max(1, ...dates.map(d=>snackItemsOf(toKey(d)).length));
-  const head = dates.map((d,i)=>`<th><div class="ps-day">${WD_LABEL[i]}요일</div><div class="ps-date">${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())}</div></th>`).join('');
-  const body = Array.from({length:maxRows}).map((_,r)=>{
-    const cells = dates.map(d=>{
-      const it = snackItemsOf(toKey(d))[r];
-      return `<td>${it ? `<div class="ps-item">${esc(snackItemName(it))}</div><div class="ps-date">×${it.qty}${esc(snackItemUnit(it))}</div>` : '<span class="ps-empty">—</span>'}</td>`;
-    }).join('');
-    return `<tr class="pk5"><th class="ps-cat">${r+1}</th>${cells}</tr>`;
-  }).join('');
-  return `<div class="printonly">
-    <h2 class="print-title">용역부 간식표</h2>
-    <div class="print-sub">${fmtMD(dates[0])} ~ ${fmtMD(dates[4])} · 용역부 ${serviceHeadcount()}명 · Unbelievable Company</div>
-    <table class="printsheet">
-      <thead><tr><th class="ps-cat">번호</th>${head}</tr></thead>
-      <tbody>${body}</tbody>
-    </table>
-  </div>`;
+function snackPrintBody(d){
+  const items = snackItemsOf(toKey(d)).filter(it=>snackItemName(it));
+  if(!items.length) return '';
+  return qtyLinesHtml(items.map(it=>({name:snackItemName(it), qty:it.qty + snackItemUnit(it)})));
 }
+/** 인쇄용 주간 간식표 — 식단표와 같은 요일 카드. 금액 없음. */
+function renderSnackPrintWeek(dates){
+  return printShell({
+    titleHead:'이번 주', titleEm:'용역부', titleTail:'간식표',
+    sub:`${fmtMD(dates[0])} ~ ${fmtMD(dates[4])} · 용역부 ${serviceHeadcount()}명`,
+    note:'맛있게 드세요',
+    foot:'표시된 간식은 사정에 따라 바뀔 수 있습니다',
+    body: printWeekCards(dates, snackPrintBody)
+  });
+}
+/** 인쇄용 월간 간식표 — 식단표 월간과 같은 달력. 금액 없음. */
 function renderSnackPrintMonth(weeks){
-  const rows = weeks.map(wk=>{
-    const cells = weekDates(wk).map(d=>{
-      const inMonth = d.getMonth()===serviceMonth.m;
-      const items = inMonth ? snackItemsOf(toKey(d)) : [];
-      const body = items.length
-        ? items.map(it=>`<div class="pm-item pk5">${esc(snackItemName(it))} ×${it.qty}</div>`).join('')
-        : (inMonth ? '<span class="ps-empty" style="font-size:11px;">—</span>' : '');
-      return `<td class="${inMonth?'':'pm-out'}"><div class="pm-date">${fmtMD(d)}</div>${body}</td>`;
-    }).join('');
-    return `<tr>${cells}</tr>`;
-  }).join('');
-  return `<div class="printonly">
-    <h2 class="print-title">용역부 월간 간식표</h2>
-    <div class="print-sub">${serviceMonth.y}년 ${serviceMonth.m+1}월 · 용역부 ${serviceHeadcount()}명 · Unbelievable Company</div>
-    <table class="pmonth">
-      <thead><tr>${WD_LABEL.map(w=>`<th>${w}요일</th>`).join('')}</tr></thead>
-      <tbody>${rows}</tbody>
-    </table>
-  </div>`;
+  return printShell({
+    kind:"month",
+    titleEm:serviceMonth.m+1+'월', titleTail:'용역부 간식표',
+    sub:`${serviceMonth.y}년 ${serviceMonth.m+1}월 · 용역부 ${serviceHeadcount()}명`,
+    foot:'표시된 간식은 사정에 따라 바뀔 수 있습니다',
+    body: printMonthGrid(weeks, serviceMonth.m, snackPrintBody)
+  });
+}
+/** 용역부 도시락 한 칸 — 기본 식사(전날 영업부 식단) + 후식·간식을 한 줄씩. */
+function lunchboxPrintBody(d){
+  const lines = serviceMealLines(toKey(d));
+  if(lines.length) return catIconLinesHtml(lines);
+  // 월요일은 도시락이 없는 날이라, 빈 칸 대신 그 이유를 적어 준다(앱이 이미 쓰고 있는 안내와 같은 문구).
+  return d.getDay()===1 ? '<div class="pw-empty">사먹는 날</div>' : '';
+}
+/** 인쇄용 주간 도시락 구성 — 예전에는 인쇄가 아예 없었다. 금액 없음. */
+function renderLunchboxPrintWeek(dates){
+  return printShell({
+    titleHead:'이번 주', titleEm:'용역부', titleTail:'도시락',
+    sub:`${fmtMD(dates[0])} ~ ${fmtMD(dates[4])} · 용역부 ${serviceHeadcount()}명`,
+    foot:'월요일은 사먹는 날이라 도시락이 없습니다',
+    body: printWeekCards(dates, lunchboxPrintBody)
+  });
+}
+/** 인쇄용 월간 도시락 구성. 금액 없음. */
+function renderLunchboxPrintMonth(weeks){
+  return printShell({
+    kind:"month",
+    titleEm:serviceMonth.m+1+'월', titleTail:'용역부 도시락',
+    sub:`${serviceMonth.y}년 ${serviceMonth.m+1}월 · 용역부 ${serviceHeadcount()}명`,
+    foot:'월요일은 사먹는 날이라 도시락이 없습니다',
+    body: printMonthGrid(weeks, serviceMonth.m, lunchboxPrintBody)
+  });
 }
 function renderServiceWeek(){
   const dates = weekDates(serviceWeekMonday);
@@ -3568,25 +4142,14 @@ function renderServiceWeek(){
       ? baseLines.map(l=>`<div style="font-size:12px;"><span class="muted">${esc(l.cat)}</span> ${esc(l.name)}</div>`).join('')
       : `<div class="muted" style="font-size:11.5px;">연결된 영업부 식단이 아직 편성되지 않았습니다</div>`;
     if(isReadOnly()){
-      // 최종 식단만 보여준다 — 포함 여부·선택 상자·메모칸 없이, 영업부 식단표와 같은 분류별 줄로.
-      const line = (cat,name)=>{
-        const bar = PRINT_CAT_SWATCH[catColor(cat)] || '';
-        return `<div class="mc-line"${bar?` style="border-left-color:${bar};"`:''}>`
-             + `<span class="mc-cat">${esc(catLabel(cat))}</span>`
-             + `<span class="mc-menu">${esc(name)}</span></div>`;
-      };
-      const activeNames = ids => (ids||[]).map(serviceMenuById)
-        .filter(sm=>sm && sm.isActive!==false).map(sm=>sm.name);
-      const parts = [];
-      if(rec.useSourceMeal!==false) baseLines.forEach(l=>parts.push(line(l.cat, l.name)));
-      activeNames(rec.dessertIds).forEach(nm=>parts.push(line('후식', nm)));
-      activeNames(rec.snackIds).forEach(nm=>parts.push(line('간식', nm)));
+      // 최종 식단만 — 포함 여부·선택 상자·메모칸 없이, 월간·영업부 식단표와 같은 줄 모양으로.
+      const lines = catLinesHtml(serviceMealLines(key), 'mline');
       return `<div class="daycard${isToday?' today':''}">
         <div class="dhead">
           <span class="d">${WD_LABEL[i]} · ${fmtMD(d)}</span>
           <span class="chip green" style="font-size:10px;padding:2px 7px;">${esc(srcLabel)}</span>
         </div>
-        <div class="readlines">${parts.length ? parts.join('') : '<span class="muted" style="font-size:12px;">아직 편성되지 않았습니다</span>'}</div>
+        <div class="readlines">${lines || '<span class="muted" style="font-size:12px;">아직 편성되지 않았습니다</span>'}</div>
         ${rec.memo ? `<div class="readmemo">📝 ${esc(rec.memo)}</div>` : ''}
       </div>`;
     }
@@ -3656,22 +4219,10 @@ function renderServiceMonth(){
       const c = serviceDayCost(key);
       if(inMonth) monthTotal += c.total;
       const srcDate = rec.sourceMealDate ? new Date(rec.sourceMealDate+'T00:00:00') : null;
-      // 영업부 식단표 월간과 같은 모양 — 쉼표로 잇지 않고 분류별 한 줄씩, 왼쪽에 인쇄물과 같은 분류색 막대
-      const line = (cat,name)=>{
-        const bar = PRINT_CAT_SWATCH[catColor(cat)] || '';
-        return `<div class="mc-line"${bar?` style="border-left-color:${bar};"`:''}>`
-             + `<span class="mc-cat">${esc(catLabel(cat))}</span>`
-             + `<span class="mc-menu">${esc(name)}</span></div>`;
-      };
-      const activeNames = ids => (ids||[]).map(serviceMenuById)
-        .filter(sm=>sm && sm.isActive!==false).map(sm=>sm.name);
-      const parts = [];
-      if(rec.useSourceMeal!==false) serviceBaseMealLines(rec.sourceMealDate).forEach(l=>parts.push(line(l.cat, l.name)));
-      activeNames(rec.dessertIds).forEach(nm=>parts.push(line('후식', nm)));
-      activeNames(rec.snackIds).forEach(nm=>parts.push(line('간식', nm)));
+      const lines = catLinesHtml(serviceMealLines(key), 'mline');
       return `<div class="monthcell${isToday?' today':''}" style="${inMonth?'':'opacity:.4;'}" onclick="jumpToServiceWeekFromMonth('${key}')">
         <div class="mc-head"><span>${WD_LABEL[i]} ${fmtMD(d)}</span>${srcDate?`<span class="chip green" style="font-size:9px;padding:1px 6px;">← ${fmtMD(srcDate)}</span>`:''}</div>
-        <div class="mc-body">${parts.length ? parts.join('') : '<span class="muted">영업부 식단 미편성</span>'}${rec.memo?`<div class="mc-memo">📝 ${esc(rec.memo)}</div>`:''}</div>
+        <div class="mc-body">${lines || '<span class="muted">영업부 식단 미편성</span>'}${rec.memo?`<div class="mc-memo">📝 ${esc(rec.memo)}</div>`:''}</div>
         ${c.total ? money(`<div class="mc-cost">1인 ${fmtWon(c.perPerson)} · 계 ${fmtWon(c.total)}</div>`) : ''}
       </div>`;
     }).join('');
@@ -4194,12 +4745,15 @@ async function addSupplierFromForm(){
   await addSupplierRec({name, phone, memo, orderUrl});
   render();
 }
-async function updateSupplierUrl(id, val){
-  await (async()=>{
-    const s = S.suppliers.find(x=>x.id===id); if(!s) return;
-    s.orderUrl = val.trim();
-    if(db) await db.doc('suppliers/'+id).set(s);
-  })();
+async function updateSupplierUrl(id, val){ await updateSupplierField(id, 'orderUrl', val); }
+/** 거래처의 한 칸을 고쳐 바로 저장한다. 이름을 비우면 목록에서 알아볼 수 없으므로 되돌린다. */
+async function updateSupplierField(id, field, val){
+  const s = S.suppliers.find(x=>x.id===id); if(!s) return;
+  const v = String(val==null?'':val).trim();
+  if(field==='name' && !v){ await customAlert('거래처명은 비워둘 수 없습니다.'); render(); return; }
+  s[field] = v;
+  if(db) await db.doc('suppliers/'+id).set(s);
+  render();
 }
 async function removeSupplier(id){ if(!await customConfirm('거래처를 삭제할까요?')) return; await deleteSupplierRec(id); render(); }
 
@@ -4306,7 +4860,7 @@ function renderMenuSetEditor(){
     const m = menuById(it.menuId);
     const label = m ? `<b>${esc(m.name)}</b> <span class="badge-cat">${esc(m.category)}</span> <span class="muted" style="font-size:11px;">${fmtWon(menuCost(m))}</span>`
                     : `<span class="chip red" style="font-size:10.5px;">삭제된 메뉴</span>`;
-    return `<div style="display:flex;align-items:center;gap:6px;padding:6px 8px;border:1px solid var(--border);border-radius:8px;background:var(--surface);margin-bottom:6px;">
+    return `<div style="display:flex;align-items:center;gap:6px;padding:6px 8px;border:var(--bw) solid var(--border);border-radius:8px;background:var(--surface);margin-bottom:6px;">
       <span class="muted num" style="width:18px;text-align:right;font-size:11px;">${idx+1}</span>
       <div style="flex:1;min-width:0;">${label}</div>
       <button class="iconbtn" style="width:24px;height:24px;" title="위로" ${idx===0?'disabled':''} onclick="menuSetDraftMoveItem(${idx},-1)">▲</button>
@@ -4353,7 +4907,7 @@ function renderMenuSetEditor(){
         <div>
           <div class="section-title" style="margin-bottom:6px;">기존 메뉴에서 선택 <span class="hint">메뉴 관리에 등록된 메뉴만</span></div>
           <input type="text" id="menuSetSearch" value="${esc(menuSetPickerQuery)}" placeholder="메뉴 검색 (이름·분류·테마)" style="width:100%;margin-bottom:6px;" oninput="menuSetPickerFilter(this.value)">
-          <div id="menuSetPicker" style="max-height:260px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;background:var(--surface);">${pickerRows}</div>
+          <div id="menuSetPicker" style="max-height:260px;overflow-y:auto;border:var(--bw) solid var(--border);border-radius:8px;background:var(--surface);">${pickerRows}</div>
         </div>
       </div>
       <div class="flex-between" style="margin-top:12px;">
@@ -4564,19 +5118,8 @@ function renderSettings(){
     </tr>`;
   }).join('');
 
-  const supRows = S.suppliers.map(s=>`
-    <tr>
-      <td>${esc(s.name)}</td>
-      <td>${esc(s.phone||'-')}</td>
-      <td class="wrap muted">${esc(s.memo||'')}</td>
-      <td><input type="text" value="${esc(s.orderUrl||'')}" placeholder="https://..." style="width:150px;" onchange="updateSupplierUrl('${s.id}',this.value)"></td>
-      <td>${s.orderUrl ? `<a class="linklike" href="${esc(s.orderUrl)}" target="_blank" rel="noopener">열기 ↗</a>` : '<span class="muted">-</span>'}</td>
-      <td><button class="iconbtn" onclick="removeSupplier('${s.id}')">✕</button></td>
-    </tr>
-  `).join('') || `<tr><td colspan="6" class="empty">등록된 거래처가 없습니다</td></tr>`;
-
   return `
-  <div class="grid cols-2" style="align-items:start;gap:18px;">
+  <div class="set-grid">
     <div class="card">
       <div class="section-title">기본 운영 설정</div>
       <div class="stack">
@@ -4584,7 +5127,9 @@ function renderSettings(){
         <label class="field">1인 목표 식재료비 (원)<input type="number" value="${S.settings.budgetPerPerson}" onchange="updateBudget(this.value)"></label>
         <p class="muted" style="font-size:11.5px;">목표 식재료비는 원가분석표의 예산 대비 비율 계산에 사용됩니다. 용역부 인원은 아래 "용역부 설정"에서 따로 관리합니다.</p>
       </div>
-      <div class="hr"></div>
+    </div>
+
+    <div class="card">
       <div class="section-title">용역부 설정 <span class="hint">영업부 인원·비용과 완전히 별개로 계산됩니다</span></div>
       <div class="stack">
         <div class="inline-form">
@@ -4603,10 +5148,14 @@ function renderSettings(){
           <span class="muted" style="font-weight:400;font-size:11px;">끄면(기본값) 영업부 인원분만 발주합니다. 용역부 몫까지 더 조리해야 한다면 켜세요.</span></span>
         </label>
       </div>
-      <div class="hr"></div>
+    </div>
+
+    <div class="card set-wide">
       <div class="section-title">요일별 테마 · 유형</div>
       <div class="twrap"><table><thead><tr><th>요일</th><th>유형</th><th>테마</th><th>배달 단가</th></tr></thead><tbody>${dtRows}</tbody></table></div>
-      <div class="hr"></div>
+    </div>
+
+    <div class="card set-wide">
       <div class="section-title">분류 · 테마 관리 <span class="hint">메뉴 관리·재료 관리 화면의 "+ 새 분류 추가…"로도 바로 추가할 수 있어요</span></div>
       <div class="stack" style="gap:10px;">
         <div>
@@ -4642,19 +5191,90 @@ function renderSettings(){
         <p class="muted" style="font-size:11.5px;">기본 제공 분류·테마(✕ 버튼 없음)는 삭제할 수 없습니다. 새로 추가한 테마는 위 "요일별 테마·유형"과 메뉴 관리의 테마 선택에, 새 재료 분류는 재료·상품 관리의 분류 선택과 필터에 바로 나타납니다.</p>
       </div>
     </div>
-    <div class="card">
-      <div class="section-title">거래처 관리</div>
-      <div class="inline-form" style="margin-bottom:12px;">
-        <label class="field">거래처명<input id="supName" type="text" placeholder="예: 싱싱마트"></label>
-        <label class="field">연락처<input id="supPhone" type="text" placeholder="010-0000-0000"></label>
-        <label class="field">비고<input id="supMemo" type="text" placeholder="담당 품목"></label>
-        <label class="field">주문 사이트 링크<input id="supUrl" type="text" placeholder="https://..."></label>
-        <button class="btn primary" onclick="addSupplierFromForm()">+ 추가</button>
-      </div>
-      <div class="twrap"><table><thead><tr><th>거래처</th><th>연락처</th><th class="wrap">비고</th><th>주문 링크</th><th></th><th></th></tr></thead><tbody>${supRows}</tbody></table></div>
-      <p class="muted" style="font-size:11.5px;margin-top:8px;">※ 대부분의 식자재몰(식봄 등)은 외부 시스템과 자동으로 연결되는 공개 API를 제공하지 않아, 발주 확정 후 이 링크로 이동해 직접 주문·결제하고 재료구매 탭에서 결제완료를 체크하는 방식을 권장합니다.</p>
-    </div>
   </div>`;
+}
+
+/* ===================== 거래처 관리 =====================
+ * 거래처는 "어디서 사오는가"를 담는 곳이라, 재료·상품 관리와 재료구매(발주)가 모두 여기를 참조한다.
+ * 그래서 목록을 표가 아니라 카드로 펼치고, 거래처마다 실제로 연결된 재료가 몇 개인지 함께 보여준다. */
+function supplierIngredients(supId){
+  return (S.ingredients||[]).filter(i=>i.supplierId===supId);
+}
+/* 거래처는 계속 늘어나므로 기본은 접어두고, 필요한 것만 펼쳐 고친다.
+ * 접힌 줄에는 거래처명·주문 링크·연락처만 남긴다. */
+let supOpen = new Set();
+function toggleSupplier(id){ if(supOpen.has(id)) supOpen.delete(id); else supOpen.add(id); render(); }
+function setAllSuppliersOpen(open){
+  supOpen = open ? new Set((S.suppliers||[]).map(x=>x.id)) : new Set();
+  render();
+}
+function renderSuppliers(){
+  const sups = S.suppliers || [];
+  const unlinked = (S.ingredients||[]).filter(i=>!i.supplierId);
+  const cards = sups.map(sp=>{
+    const items = supplierIngredients(sp.id);
+    const url = (sp.orderUrl||'').trim();
+    const open = supOpen.has(sp.id);
+    const preview = items.slice(0,8).map(i=>`<span class="chip gray" style="font-size:10.5px;">${esc(i.name)}</span>`).join('');
+    const summary = `<div class="sup-sum" onclick="toggleSupplier('${sp.id}')" title="눌러서 ${open?'접기':'상세 보기'}">
+      <span class="sup-caret">${open?'▾':'▸'}</span>
+      <span class="sup-sname">${esc(sp.name||'(이름 없음)')}</span>
+      ${url ? `<a class="sup-link" href="${esc(url)}" target="_blank" rel="noopener" title="주문 사이트 열기" onclick="event.stopPropagation();">🔗</a>`
+            : `<span class="sup-link off" title="주문 링크 없음">🔗</span>`}
+      <span class="sup-phone">${esc(sp.phone||'연락처 없음')}</span>
+      <span class="chip ${items.length?'green':'gray'}" style="font-size:10px;padding:2px 7px;">재료 ${items.length}</span>
+    </div>`;
+    if(!open) return `<div class="supcard collapsed">${summary}</div>`;
+    return `<div class="supcard">
+      ${summary}
+      <div class="sup-grid">
+        <label class="field"><span>연락처</span>
+          <input value="${esc(sp.phone||'')}" placeholder="010-0000-0000" onchange="updateSupplierField('${sp.id}','phone',this.value)"></label>
+        <label class="field"><span>담당 품목 · 비고</span>
+          <input value="${esc(sp.memo||'')}" placeholder="예: 채소·과일" onchange="updateSupplierField('${sp.id}','memo',this.value)"></label>
+      </div>
+      <label class="field sup-url"><span>주문 사이트</span>
+        <span class="sup-urlrow">
+          <input value="${esc(url)}" placeholder="https://..." onchange="updateSupplierField('${sp.id}','orderUrl',this.value)">
+          ${url ? `<a class="btn small" href="${esc(url)}" target="_blank" rel="noopener">열기 ↗</a>`
+                : `<span class="btn small ghost" style="opacity:.45;cursor:default;">열기 ↗</span>`}
+        </span>
+      </label>
+      <div class="sup-foot">
+        <span class="chip ${items.length?'green':'gray'}">연결된 재료 ${items.length}개</span>
+        ${preview}${items.length>8?`<span class="muted" style="font-size:10.5px;">외 ${items.length-8}개</span>`:''}
+        <button class="btn small ghost danger" style="margin-left:auto;" onclick="removeSupplier('${sp.id}')">거래처 삭제</button>
+      </div>
+    </div>`;
+  }).join('') || `<div class="empty" style="grid-column:1/-1;">등록된 거래처가 없습니다 — 아래에서 추가해 주세요</div>`;
+
+  return `
+  <div class="grid cols-3" style="margin-bottom:16px;">
+    <div class="card stat-tile tight"><span class="label">등록된 거래처</span><span class="value num">${sups.length}곳</span><span class="sub">재료·상품 관리에서 선택할 수 있습니다</span></div>
+    <div class="card stat-tile tight"><span class="label">주문 링크 등록</span><span class="value num">${sups.filter(x=>(x.orderUrl||'').trim()).length}곳</span><span class="sub">발주서에서 바로 주문 페이지로 이동</span></div>
+    <div class="card stat-tile tight"><span class="label">거래처 미지정 재료</span><span class="value num" style="color:${unlinked.length?'var(--amber)':'inherit'}">${unlinked.length}개</span><span class="sub">${unlinked.length?'재료·상품 관리에서 주문처를 지정해 주세요':'모든 재료에 주문처가 지정됨'}</span></div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px;">
+    <div class="section-title">거래처 추가</div>
+    <div class="inline-form">
+      <label class="field">거래처명<input id="supName" type="text" placeholder="예: 싱싱마트"></label>
+      <label class="field">연락처<input id="supPhone" type="text" placeholder="010-0000-0000"></label>
+      <label class="field">담당 품목 · 비고<input id="supMemo" type="text" placeholder="예: 채소·과일"></label>
+      <label class="field">주문 사이트 링크<input id="supUrl" type="text" placeholder="https://..."></label>
+      <button class="btn primary" onclick="addSupplierFromForm()">+ 추가</button>
+    </div>
+  </div>
+
+  <div class="flex-between" style="margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+    <div class="section-title" style="margin-bottom:0;">거래처 목록 <span class="hint">줄을 누르면 펼쳐지고, 칸을 고치면 바로 저장됩니다</span></div>
+    <span class="chip-row">
+      <button class="btn small ghost" onclick="setAllSuppliersOpen(true)">모두 펼치기</button>
+      <button class="btn small ghost" onclick="setAllSuppliersOpen(false)">모두 접기</button>
+    </span>
+  </div>
+  <div class="supgrid">${cards}</div>
+  <p class="muted" style="font-size:11.5px;margin-top:14px;">※ 대부분의 식자재몰(식봄 등)은 외부 시스템과 자동으로 연결되는 공개 API를 제공하지 않습니다. 발주를 확정한 뒤 이 주문 링크로 이동해 직접 주문·결제하고, 재료구매 탭에서 결제완료를 체크하는 방식을 권장합니다.</p>`;
 }
 
 /* ===================== 화면 밝기(테마) 선택 =====================
@@ -4663,9 +5283,10 @@ function renderSettings(){
  * CSS는 이미 :root[data-theme="dark"] / :root:not([data-theme="light"]) 규칙을 갖고 있어
  * 여기서는 html 태그의 data-theme 속성만 바꿔주면 된다. */
 const THEME_KEY = 'meal_app_theme_mode';
+/** 저장된 선택이 없으면 '밝게'가 기본이다 — 기기가 어두운 모드여도 이 앱은 밝게 시작한다. */
 function currentThemeMode(){
   try{ const v = localStorage.getItem(THEME_KEY); if(v==='light'||v==='dark'||v==='auto') return v; }catch(e){}
-  return 'auto';
+  return 'light';
 }
 function applyThemeMode(mode){
   const root = document.documentElement;
@@ -4705,6 +5326,7 @@ async function startApp(){
 }
 (async function boot(){
   applyThemeMode(currentThemeMode());
+  setupBoardPan();
   await initDb();
   document.getElementById('dbstatus').textContent =
     AUTH_ENABLED ? '🔒 로그인 · 실시간 저장 연결됨'
