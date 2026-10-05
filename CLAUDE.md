@@ -264,8 +264,9 @@ console.log('오류 '+bad);"
 
 | 항목 | 값 |
 |---|---|
-| 접속 주소 | https://dongsee97-ctrl.github.io/meal/ |
-| 저장소 | `dongsee97-ctrl/meal` (Public, GitHub Pages, main 브랜치) |
+| 접속 주소 | https://rexpower1234-cpu.github.io/meal/ |
+| 저장소 | `rexpower1234-cpu/meal` (대표님 계정, Public, GitHub Pages, main 브랜치) |
+| 운영자 | 신동석 (`dongsee97-ctrl`, 공동작업자 권한) |
 | 데이터 | Firebase Firestore — `food-auto` (asia-northeast3) |
 | 기준 인원 | 영업부 12명 / 용역부 5명 |
 | 목표 1인 식재료비 | 7,000원 |
